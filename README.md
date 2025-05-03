@@ -37,3 +37,31 @@ Because lyrics matter. Misspelled titles, wrong translations, or missing lines? 
 | Aisyah / Ilma | @aisyahilma  | UI/UX Designer      |
 
 Frontend also do UI/UX Design. Backend also do DevOps/deployment.
+
+## Getting Started
+
+### Installation
+
+Install the dependencies:
+
+```bash
+bun install
+```
+
+### Development
+
+Start the development server with HMR:
+
+```bash
+bun run dev
+```
+
+Your application will be available at `http://localhost:5173`.
+
+## Building for Production
+
+Create a production build:
+
+```bash
+bun run build
+```
