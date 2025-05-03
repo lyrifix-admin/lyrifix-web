@@ -1,87 +1,39 @@
-# Welcome to React Router!
+# 🎵 Lyrifix
 
-A modern, production-ready template for building full-stack React applications using React Router.
+Fix the Lyrics. Feel the Music.
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
+Lyrifix is your all-in-one global lyrics platform — made for music lovers, lyric hunters, and community contributors.
+
+Whether you're singing along to Indonesian pop, Japanese anthems, Arabic ballads, or English chart-toppers, Lyrifix helps you:
+
+- 🎤 Discover accurate lyrics in multiple languages
+- 🛠️ Fix typos or incorrect titles submitted by others
+- 🌍 Contribute new lyrics with a collaborative community
+- ✅ Submit with approval to maintain quality and trust
+- 🔗 Link songs directly to Spotify and official YouTube Music Videos
+
+From Indonesia Raya to Kimigayo, from global hits to local gems — Lyrifix is building the world's most accurate, community-powered lyrics archive.
+
+🔍 Why Lyrifix?
+
+Because lyrics matter. Misspelled titles, wrong translations, or missing lines? We've all been there. Lyrifix is not just a lyrics app — it's a movement to fix the music experience, one lyric at a time.
 
 ## Features
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+- Read lyrics easily
+- Search by title, artist, or even partial lyrics
+- Mobile-friendly, fast, and minimal UI
+- Multilingual support (ID, EN, AR, JP & more)
+- Community editing with moderation
+- Linking to Spotify and YouTube, or auto through API
 
-## Getting Started
+## Team Members
 
-### Installation
+| Full Name     | GitHub       | Role                |
+| ------------- | ------------ | ------------------- |
+| Apping        | @haloapping  | Tech Lead & Backend |
+| Vigo          | @artupogiv   | Backend Developer   |
+| Indah         | @indahmutiah | Frontend Developer  |
+| Aisyah / Ilma | @aisyahilma  | UI/UX Designer      |
 
-Install the dependencies:
-
-```bash
-npm install
-```
-
-### Development
-
-Start the development server with HMR:
-
-```bash
-npm run dev
-```
-
-Your application will be available at `http://localhost:5173`.
-
-## Building for Production
-
-Create a production build:
-
-```bash
-npm run build
-```
-
-## Deployment
-
-### Docker Deployment
-
-To build and run using Docker:
-
-```bash
-docker build -t my-app .
-
-# Run the container
-docker run -p 3000:3000 my-app
-```
-
-The containerized application can be deployed to any platform that supports Docker, including:
-
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
-
-### DIY Deployment
-
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
-```
-
-## Styling
-
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
-
----
-
-Built with ❤️ using React Router.
+Frontend also do UI/UX Design. Backend also do DevOps/deployment.
