@@ -2,6 +2,7 @@ import type { Route } from "./+types/home";
 import type { Songs } from "~/modules/song/type";
 import { Banner } from "~/components/banner";
 import { SongCard } from "~/components/song-card";
+import { Link } from "react-router";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -22,11 +23,15 @@ export default function Home({ loaderData }: Route.ComponentProps) {
   return (
     <>
       <Banner />
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2">
+      <ul className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2">
         {songs.map((song) => (
-          <SongCard key={song.id} song={song} />
+          <li key={song.id}>
+            <Link to={`/songs/${song.slug}`}>
+              <SongCard key={song.id} song={song} />
+            </Link>
+          </li>
         ))}
-      </div>
+      </ul>
     </>
   );
 }
