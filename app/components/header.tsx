@@ -8,14 +8,14 @@ export function Header() {
         <img
           src="/images/lyrifix-dark.png"
           alt="logo"
-          className="ml-4 h-16 w-24 max-w-[120px] min-w-[50px] rounded-md"
+          className="h-16 w-24 max-w-[120px] min-w-[50px] rounded-md"
         />
       </a>
-      <div className="absolute left-1/2 -translate-x-1/2">
+      <div className="absolute left-1/2 ml-8 flex -translate-x-1/2 flex-row items-center">
         <Form method="get" action="/search">
           <Input
             name="q"
-            placeholder="Search"
+            placeholder="Search for songs..."
             className="w-[300px] rounded-md border-2 border-fuchsia-950 p-2 pl-4"
           />
         </Form>

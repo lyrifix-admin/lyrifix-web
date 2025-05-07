@@ -1,7 +1,7 @@
 import type { Route } from "./+types/home";
-import { Header } from "~/components/header";
-import { Card, CardContent, CardTitle } from "~/components/ui/card";
 import type { Songs } from "~/modules/song/type";
+import { Banner } from "~/components/banner";
+import { SongCard } from "~/components/song-card";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -19,23 +19,14 @@ export async function loader({}: Route.LoaderArgs) {
 export default function Home({ loaderData }: Route.ComponentProps) {
   const songs = loaderData;
 
-  console.log(songs, "ini cek undifined");
-
   return (
-    <div className="min-h-screen">
-      <Header />
-      <div className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2 lg:grid-cols-3">
-        {songs.map((song) => {
-          return (
-            <Card key={song.id} className="shadow-lg">
-              <CardContent>
-                <CardTitle>{song.title}</CardTitle>
-                <p>{song.artist}</p>
-              </CardContent>
-            </Card>
-          );
-        })}
+    <>
+      <Banner />
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2">
+        {songs.map((song) => (
+          <SongCard key={song.id} song={song} />
+        ))}
       </div>
-    </div>
+    </>
   );
 }
