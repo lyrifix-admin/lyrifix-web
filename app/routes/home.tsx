@@ -1,7 +1,7 @@
 import type { Route } from "./+types/home";
 import { Header } from "~/components/header";
-import type { SongsSchema } from "~/modules/song/schema";
 import { Card, CardContent, CardTitle } from "~/components/ui/card";
+import type { Songs } from "~/modules/song/type";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -11,15 +11,9 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export async function loader({}: Route.LoaderArgs) {
-  try {
-    const baseUrl = String(process.env.BACKEND_API_URL);
-    const response = await fetch(`${baseUrl}/songs`);
-    const songs: typeof SongsSchema = await response.json();
-
-    return songs;
-  } catch (error) {
-    return error;
-  }
+  const response = await fetch(`${process.env.BACKEND_API_URL}/songs`);
+  const songs: Songs = await response.json();
+  return songs;
 }
 
 export default function Home({ loaderData }: Route.ComponentProps) {
