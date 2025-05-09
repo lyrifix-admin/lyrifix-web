@@ -11,12 +11,13 @@ export function Header() {
           className="h-16 w-24 max-w-[120px] min-w-[50px] rounded-md"
         />
       </a>
-      <div className="absolute left-1/2 ml-8 flex -translate-x-1/2 flex-row items-center">
-        <Form method="get" action="/search">
+
+      <div className="flex flex-row items-center">
+        <Form method="get" action="/search" className="">
           <Input
             name="q"
             placeholder="Search for songs..."
-            className="w-[300px] rounded-md border-2 border-fuchsia-950 p-2 pl-4"
+            className="min-w-2xs"
           />
         </Form>
       </div>

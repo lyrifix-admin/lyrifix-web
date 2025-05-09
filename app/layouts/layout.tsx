@@ -7,7 +7,7 @@ export default function Layout() {
     <div className="bg-background no-scrollbar relative mx-auto min-h-screen max-w-[500px] overflow-auto">
       <Header />
 
-      <div className="mx-auto max-w-screen-xl px-4 pb-20 sm:px-6 md:px-8">
+      <div className="mx-auto max-w-screen-xl px-4 pb-28 sm:px-6 md:px-8">
         <Outlet />
       </div>
 
