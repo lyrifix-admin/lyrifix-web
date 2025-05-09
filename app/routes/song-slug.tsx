@@ -1,3 +1,4 @@
+import { BACKEND_API_URL } from "~/env";
 import type { Route } from "./+types/song-slug";
 import type { Song } from "~/modules/song/type";
 
@@ -14,9 +15,7 @@ export function meta({}: Route.MetaArgs) {
 export async function loader({ params }: Route.LoaderArgs) {
   const { slug } = params;
   try {
-    const response = await fetch(
-      `${process.env.BACKEND_API_URL}/songs/${slug}`,
-    );
+    const response = await fetch(`${BACKEND_API_URL}/songs/${slug}`);
     if (!response.ok) {
       throw new Error("Failed to fetch song data");
     }
