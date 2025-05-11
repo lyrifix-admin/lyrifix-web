@@ -8,7 +8,7 @@ export function Header() {
         <img
           src="/images/lyrifix-dark.png"
           alt="logo"
-          className="h-16 w-24 max-w-[120px] min-w-[50px] rounded-md"
+          className="h-8 w-24 max-w-[120px] min-w-[50px] rounded-md"
         />
       </a>
 
