@@ -12,3 +12,7 @@ export type Song = {
 };
 
 export type Songs = Song[];
+
+export type SongsResponse = {
+  songs: Song[];
+};
