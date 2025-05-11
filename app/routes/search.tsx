@@ -1,7 +1,7 @@
 import type { Route } from "./+types/search";
 import type { SongsResponse } from "~/modules/song/type";
 import { SongCard } from "~/components/song-card";
-import { Link } from "react-router";
+import { Link, redirect } from "react-router";
 export function meta({}: Route.MetaArgs) {
   return [
     { title: "Lyrifix | Search" },
@@ -14,9 +14,12 @@ export function meta({}: Route.MetaArgs) {
 
 export async function loader({
   request,
-}: Route.LoaderArgs): Promise<SongsResponse> {
+}: Route.LoaderArgs): Promise<SongsResponse | Response> {
   const url = new URL(request.url);
-  const keyword = url.searchParams.get("keyword") || "";
+  const keyword = url.searchParams.get("keyword")?.trim();
+  if (!keyword) {
+    return redirect("/");
+  }
   const response = await fetch(
     `${process.env.BACKEND_API_URL}/songs/search?keyword=${keyword}`,
   );
