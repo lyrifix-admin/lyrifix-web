@@ -1,55 +1,106 @@
-import { Form } from "react-router";
+import { Form, redirect } from "react-router";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardFooter,
+} from "~/components/ui/card";
+import type { Route } from "./+types/login";
+import { parseWithZod } from "@conform-to/zod";
+import { useForm } from "@conform-to/react";
+import { LoginSchema } from "~/modules/login/schema";
+import { Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
 
-export default function LoginRoute() {
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "Login Lyrifix" },
+    {
+      name: "description",
+      content: "Login to Lyrifix. Fix the lyric, Feel the music.",
+    },
+  ];
+}
+
+export async function action({ request }: Route.ClientActionArgs) {
+  const formData = await request.formData();
+  const submission = parseWithZod(formData, { schema: LoginSchema });
+
+  if (submission.status !== "success") {
+    return submission.reply();
+  }
+  console.log(formData);
+  return redirect("/dashboard");
+}
+
+export default function LoginRoute({ actionData }: Route.ComponentProps) {
+  const [form, fields] = useForm({
+    lastResult: actionData,
+    onValidate({ formData }) {
+      return parseWithZod(formData, { schema: LoginSchema });
+    },
+    shouldValidate: "onBlur",
+    shouldRevalidate: "onBlur",
+  });
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   return (
     <div className="flex min-h-screen flex-col items-center justify-center">
-      <h1 className="mb-4 text-3xl font-bold">Login Lyrifix</h1>
       <Form
         method="post"
         action="/login"
-        className="bg-card w-full max-w-sm rounded p-6 shadow-md"
+        id="{form.id}"
+        onSubmit={form.onSubmit}
       >
-        <div className="mb-4">
-          <Label
-            htmlFor="email"
-            className="block text-sm font-medium text-white"
-          >
-            Email
-          </Label>
-          <Input
-            name="email"
-            type="email"
-            id="email"
-            placeholder="Enter your email"
-            className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm"
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <Label
-            htmlFor="password"
-            className="block text-sm font-medium text-white"
-          >
-            Password
-          </Label>
-          <Input
-            name="password"
-            type="password"
-            id="password"
-            placeholder="Enter your password"
-            className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm"
-            required
-          />
-        </div>
-        <Button
-          type="submit"
-          className="w-full rounded bg-fuchsia-600 py-2 text-white transition duration-200 hover:bg-fuchsia-700"
-        >
-          Login
-        </Button>
+        <Card className="w-[450px]">
+          <CardHeader>
+            <CardTitle className="text-center font-bold">Login</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="mr-4 ml-4 grid grid-cols-1 gap-4">
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  key={fields.email.key}
+                  name={fields.email.name}
+                  id="email"
+                  placeholder="user@example.com"
+                />
+                <p className="text-sm text-red-500">{fields.email.errors}</p>
+              </div>
+
+              <div className="relative flex min-h-[72px] flex-col space-y-1.5">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  key={fields.password.key}
+                  name={fields.password.name}
+                  id="password"
+                  placeholder="Enter your password"
+                  type={showPassword ? "text" : "password"}
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="text-muted-foreground hover:text-foreground absolute top-1/2 right-4 -translate-y-1/2"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+              {fields.password.errors?.map((error, index) => (
+                <li key={index} className="text-sm text-red-500">
+                  {error}
+                </li>
+              ))}
+            </div>
+          </CardContent>
+          <CardFooter className="flex justify-center">
+            <Button className="w-full">Login</Button>
+          </CardFooter>
+        </Card>
       </Form>
       <div className="mt-4 text-sm text-white">
         Do not have an account?{" "}
