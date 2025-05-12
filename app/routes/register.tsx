@@ -62,7 +62,12 @@ export default function RegisterRoute() {
             </div>
           </CardContent>
           <CardFooter className="flex justify-center">
-            <Button className="w-full">Register</Button>
+            <a
+              href="/login"
+              className="inline-flex w-full items-center justify-center rounded-md bg-fuchsia-600 px-4 py-2 text-sm font-medium text-white hover:bg-fuchsia-700"
+            >
+              Login
+            </a>
           </CardFooter>
         </Card>
       </Form>
