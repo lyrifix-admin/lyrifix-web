@@ -1,5 +1,5 @@
 import type { Route } from "./+types/search";
-import type { SongsResponse } from "~/modules/song/type";
+import type { SearchResultsResponse } from "~/modules/song/type";
 import { SongCard } from "~/components/song-card";
 import { Link, redirect } from "react-router";
 export function meta({}: Route.MetaArgs) {
@@ -14,25 +14,24 @@ export function meta({}: Route.MetaArgs) {
 
 export async function loader({
   request,
-}: Route.LoaderArgs): Promise<SongsResponse | Response> {
+}: Route.LoaderArgs): Promise<SearchResultsResponse | Response> {
   const url = new URL(request.url);
-  const keyword = url.searchParams.get("keyword")?.trim();
-  if (!keyword) {
+  const q = url.searchParams.get("q")?.trim();
+  if (!q) {
     return redirect("/");
   }
-  const response = await fetch(
-    `${process.env.BACKEND_API_URL}/songs/search?keyword=${keyword}`,
-  );
-  const songs: SongsResponse = await response.json();
-  return songs;
+  const response = await fetch(`${process.env.BACKEND_API_URL}/search?q=${q}`);
+  const results: SearchResultsResponse = await response.json();
+  return results;
 }
 
 export default function SearchRoute({
   loaderData,
 }: {
-  loaderData: SongsResponse;
+  loaderData: SearchResultsResponse;
 }) {
-  const songs = loaderData.songs;
+  const { songs } = loaderData;
+
   return (
     <div>
       <ul className="grid grid-cols-2 gap-4">

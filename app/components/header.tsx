@@ -19,7 +19,7 @@ export function Header() {
       <div className="flex flex-row items-center">
         <Form method="get" action="/search" className="">
           <Input
-            name="keyword"
+            name="q"
             placeholder="Search for songs..."
             className="min-w-2xs"
           />

@@ -13,6 +13,6 @@ export type Song = {
 
 export type Songs = Song[];
 
-export type SongsResponse = {
+export type SearchResultsResponse = {
   songs: Song[];
 };
