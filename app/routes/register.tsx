@@ -7,6 +7,7 @@ import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { RegisterSchema } from "~/modules/login/schema";
 import { parseWithZod } from "@conform-to/zod";
+import { useForm } from "@conform-to/react";
 import { Button } from "~/components/ui/button";
 
 export function meta({}: Route.MetaArgs) {
@@ -28,12 +29,20 @@ export async function action({ request }: Route.ClientActionArgs) {
   }
 
   console.log(submission.value);
-  // TODO: Login to API
+  // TODO: Register to API
 
   return redirect("/login");
 }
 
-export default function RegisterRoute() {
+export default function RegisterRoute({ actionData }: Route.ComponentProps) {
+  const [form, fields] = useForm({
+    lastResult: actionData,
+    onValidate({ formData }) {
+      return parseWithZod(formData, { schema: RegisterSchema });
+    },
+    shouldValidate: "onBlur",
+    shouldRevalidate: "onBlur",
+  });
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   return (
@@ -48,19 +57,34 @@ export default function RegisterRoute() {
             method="post"
             action="/register"
             className="mr-4 ml-4 grid grid-cols-1 gap-4"
+            onSubmit={form.onSubmit}
           >
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="fullName">Full Name</Label>
-              <Input name="fullName" id="fullName" placeholder="John Doe" />
+              <Input
+                key={fields.fullName.key}
+                name={fields.fullName.name}
+                id="fullName"
+                placeholder="John Doe"
+              />
+              <p className="text-sm text-red-500">{fields.fullName.errors}</p>
             </div>
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="email">Email</Label>
-              <Input name="email" id="email" placeholder="user@example.com" />
+              <Input
+                key={fields.email.key}
+                name={fields.email.name}
+                id="email"
+                placeholder="user@example.com"
+              />
+              <p className="text-sm text-red-500">{fields.email.errors}</p>
             </div>
 
             <div className="relative flex min-h-[72px] flex-col space-y-1.5">
               <Label htmlFor="password">Password</Label>
               <Input
+                key={fields.password.key}
+                name={fields.password.name}
                 id="password"
                 type={showPassword ? "text" : "password"}
                 className="pr-10"
@@ -73,6 +97,11 @@ export default function RegisterRoute() {
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
+            {fields.password.errors?.map((error, index) => (
+              <li key={index} className="text-sm text-red-500">
+                {error}
+              </li>
+            ))}
 
             <Button className="flex-1">Register</Button>
           </Form>
