@@ -1,7 +1,8 @@
 import type { Route } from "./+types/search";
-import type { SearchResultsResponse } from "~/modules/song/type";
 import { SongCard } from "~/components/song-card";
 import { Link, redirect } from "react-router";
+import type { SearchResultsResponse } from "~/schemas/search";
+
 export function meta({}: Route.MetaArgs) {
   return [
     { title: "Lyrifix | Search" },
@@ -12,9 +13,7 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-export async function loader({
-  request,
-}: Route.LoaderArgs): Promise<SearchResultsResponse | Response> {
+export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
   const q = url.searchParams.get("q")?.trim();
   if (!q) {

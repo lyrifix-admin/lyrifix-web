@@ -13,3 +13,5 @@ export const CreateArtistSchema = ArtistSchema.omit({
   createdAt: true,
   updatedAt: true,
 });
+
+export type Artist = z.infer<typeof ArtistSchema>;

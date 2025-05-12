@@ -1,10 +1,10 @@
-import type { Song } from "~/modules/song/type";
 import {
   Card,
   CardContent,
   CardDescription,
   CardTitle,
 } from "~/components/ui/card";
+import type { Song } from "~/schemas/song";
 
 export function SongCard({ song }: { song: Song; className?: string }) {
   return (

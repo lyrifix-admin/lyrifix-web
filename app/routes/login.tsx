@@ -6,7 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "~/components/ui/card";
 import type { Route } from "./+types/login";
 import { parseWithZod } from "@conform-to/zod";
 import { useForm } from "@conform-to/react";
-import { LoginSchema } from "~/modules/login/schema";
+import { LoginSchema } from "~/schemas/auth";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 

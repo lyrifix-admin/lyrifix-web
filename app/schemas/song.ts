@@ -1,12 +1,12 @@
 import { z } from "zod";
-import { LyricSchema } from "../lyric/schema";
-import { ArtistSchema } from "../artist/schema";
+import { ArtistSchema } from "./artist";
+import { LyricSchema } from "./lyric";
 
 export const SongSchema = z.object({
   id: z.string().ulid(),
   slug: z.string(),
   title: z.string(),
-  imageUrl: z.string().nullable(),
+  imageUrl: z.string().optional(),
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
   artists: z.array(ArtistSchema),
@@ -14,3 +14,6 @@ export const SongSchema = z.object({
 });
 
 export const SongsSchema = z.array(SongSchema);
+
+export type Song = z.infer<typeof SongSchema>;
+export type Songs = z.infer<typeof SongsSchema>;

@@ -5,7 +5,7 @@ import { Label } from "~/components/ui/label";
 import { Card, CardHeader, CardTitle, CardContent } from "~/components/ui/card";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import { RegisterSchema } from "~/modules/login/schema";
+import { RegisterSchema } from "~/schemas/auth";
 import { parseWithZod } from "@conform-to/zod";
 import { useForm } from "@conform-to/react";
 import { Button } from "~/components/ui/button";

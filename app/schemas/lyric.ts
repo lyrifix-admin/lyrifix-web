@@ -2,11 +2,9 @@ import { z } from "zod";
 
 export const LyricSchema = z.object({
   id: z.string(),
-
   slug: z.string(),
   songId: z.string(),
   text: z.string(),
-
   createdAt: z.date(),
   updatedAt: z.date(),
 });
@@ -20,3 +18,6 @@ export const CreateLyricSchema = LyricSchema.omit({
 });
 
 export const CreateLyricschema = z.array(CreateLyricSchema);
+
+export type Lyric = z.infer<typeof LyricSchema>;
+export type Lyrics = z.infer<typeof LyricsSchema>;

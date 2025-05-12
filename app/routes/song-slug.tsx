@@ -1,6 +1,6 @@
 import { BACKEND_API_URL } from "~/env";
 import type { Route } from "./+types/song-slug";
-import type { Song } from "~/modules/song/type";
+import type { Song } from "~/schemas/song";
 
 export function meta({}: Route.MetaArgs) {
   return [

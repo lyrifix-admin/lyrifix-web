@@ -1,9 +1,9 @@
 import type { Route } from "./+types/home";
-import type { Songs } from "~/modules/song/type";
 import { Banner } from "~/components/banner";
 import { SongCard } from "~/components/song-card";
 import { Link } from "react-router";
 import { BACKEND_API_URL } from "~/env";
+import type { Songs } from "~/schemas/song";
 
 export function meta({}: Route.MetaArgs) {
   return [
