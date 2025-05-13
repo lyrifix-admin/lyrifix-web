@@ -14,5 +14,6 @@ export default [
     route("/search", "routes/search.tsx"),
     route("/dashboard", "routes/dashboard.tsx"),
     route("/artist", "routes/artist.tsx"),
+    route("/logout", "routes/logout.tsx"),
   ]),
 ] satisfies RouteConfig;
