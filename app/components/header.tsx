@@ -12,9 +12,9 @@ export function Header() {
         />
       </a>
 
-      <a href="/dashboard" className="text-white hover:underline">
+      {/* <a href="/dashboard" className="text-white hover:underline">
         Dashboard
-      </a>
+      </a> */}
 
       <div className="flex flex-row items-center">
         <Form method="get" action="/search" className="">

@@ -1,4 +1,4 @@
-import { Home, User } from "lucide-react";
+import { Home, User, Palette, CircleGauge } from "lucide-react";
 import { Link } from "react-router";
 import { useState } from "react";
 
@@ -22,6 +22,26 @@ export const BottomNavbar = () => {
           <span className="text-sm">Home</span>
         </Link>
         <Link
+          to={`/artist`}
+          onClick={() => handleNavigation("/artist")}
+          className={`flex flex-col items-center ${
+            activePath === "/artist" ? "text-fuchsia-400" : ""
+          }`}
+        >
+          <Palette className="mb-1 h-6 w-6" />
+          <span className="text-sm">Artist</span>
+        </Link>
+        <Link
+          to="/dashboard"
+          onClick={() => handleNavigation("/dashboard")}
+          className={`flex flex-col items-center ${
+            activePath === "/dashboard" ? "text-fuchsia-400" : ""
+          }`}
+        >
+          <CircleGauge className="mb-1 h-6 w-6" />
+          <span className="text-sm">Dashboard</span>
+        </Link>
+        <Link
           to="/login"
           onClick={() => handleNavigation("/login")}
           className={`flex flex-col items-center ${
@@ -29,7 +49,7 @@ export const BottomNavbar = () => {
           }`}
         >
           <User className="mb-1 h-6 w-6" />
-          <span className="text-sm">Login</span>
+          <span className="text-sm">User</span>
         </Link>
       </div>
     </nav>
