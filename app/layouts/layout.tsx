@@ -1,8 +1,36 @@
-import { Outlet } from "react-router";
+import { Outlet, useLoaderData } from "react-router";
 import { Header } from "~/components/header";
 import { BottomNavbar } from "~/components/bottom-navbar";
+import type { Route } from "../+types/root";
+import { getSession } from "~/sessions.server";
+
+export async function loader({ request }: Route.LoaderArgs) {
+  const session = await getSession(request.headers.get("Cookie"));
+
+  if (!session.has("token")) {
+    return null; // user belum login
+  }
+
+  const token = session.get("token");
+
+  const response = await fetch(`${process.env.BACKEND_API_URL}/auth/me`, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    return null; // user tidak valid
+  }
+
+  const userData = await response.json();
+  return userData;
+}
 
 export default function Layout() {
+  const user = useLoaderData<typeof loader>();
+
   return (
     <div className="bg-background no-scrollbar fixed relative mx-auto min-h-screen w-full max-w-[500px] overflow-auto">
       <div className="fixed top-0 left-1/2 z-10 w-full max-w-[500px] -translate-x-1/2">
@@ -14,7 +42,7 @@ export default function Layout() {
       </div>
 
       <div className="fixed bottom-0 left-1/2 w-full max-w-[500px] -translate-x-1/2">
-        <BottomNavbar />
+        <BottomNavbar user={user} />
       </div>
     </div>
   );
