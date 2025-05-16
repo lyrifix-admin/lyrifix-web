@@ -1,15 +1,14 @@
 import { Home, User, Palette, CircleGauge } from "lucide-react";
 import { Link, useLocation } from "react-router";
-// import { useState } from "react";
 
-// interface BottomNavbarProps {
-//   user: {
-//     name: string;
-//     email: string;
-//   };
-// }
+interface BottomNavbarProps {
+  user: {
+    name: string;
+    email: string;
+  };
+}
 
-export const BottomNavbar = () => {
+export const BottomNavbar = ({ user }: BottomNavbarProps) => {
   const location = useLocation();
 
   return (
@@ -43,7 +42,7 @@ export const BottomNavbar = () => {
           <span className="text-sm">Dashboard</span>
         </Link>
         <Link
-          to="/login"
+          to={user ? "/logout" : "/login"}
           className={`flex flex-col items-center ${
             location.pathname.startsWith("/login") ||
             location.pathname.startsWith("/register") ||
@@ -53,7 +52,7 @@ export const BottomNavbar = () => {
           }`}
         >
           <User className="mb-1 h-6 w-6" />
-          <span className="text-sm">User</span>
+          <span className="text-sm">{user ? "Logout" : "Login"}</span>
         </Link>
       </div>
     </nav>
