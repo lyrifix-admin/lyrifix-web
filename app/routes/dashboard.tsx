@@ -1,18 +1,42 @@
-import { useEffect, useState } from "react";
+import { destroySession, getSession } from "~/sessions.server";
+import type { Route } from "./+types/dashboard";
+import { redirect } from "react-router";
 
-export default function Dashboard() {
-  const [data, setData] = useState(null);
+export async function loader({ request }: Route.LoaderArgs) {
+  const session = await getSession(request.headers.get("Cookie"));
 
-  useEffect(() => {
-    fetch("/api/dashboard")
-      .then((res) => res.json())
-      .then((result) => setData(result));
-  }, []);
+  if (!session.has("token")) {
+    return redirect("/login");
+  }
 
+  const token = session.get("token");
+  console.info("dashboard:token", token);
+
+  const response = await fetch(`${process.env.BACKEND_API_URL}/auth/me`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  if (!response.ok) {
+    session.flash("error", "Failed to check user");
+    return redirect("/login", {
+      headers: { "Set-Cookie": await destroySession(session) },
+    });
+  }
+
+  const userData = await response.json();
+  console.info({ userData });
+
+  return userData;
+}
+
+export default function Dashboard({ loaderData }: Route.ComponentProps) {
   return (
     <div className="p-6 text-white">
       <h1 className="text-2xl font-bold">Dashboard</h1>
-      {data ? <pre>{JSON.stringify(data, null, 2)}</pre> : <p>Welcome</p>}
+      <p className="mb-4 text-lg">Welcome back, {loaderData.fullName}!</p>
     </div>
   );
 }
