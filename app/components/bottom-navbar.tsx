@@ -1,14 +1,13 @@
-import { Home, User, Palette, CircleGauge } from "lucide-react";
+import { HomeIcon, UserIcon, PaletteIcon, CircleGaugeIcon } from "lucide-react";
 import { Link, useLocation } from "react-router";
+import type { User } from "~/schemas/user";
 
 interface BottomNavbarProps {
-  user: {
-    name: string;
-    email: string;
-  };
+  isAuthenticated: boolean;
+  user: User;
 }
 
-export const BottomNavbar = ({ user }: BottomNavbarProps) => {
+export const BottomNavbar = ({ isAuthenticated, user }: BottomNavbarProps) => {
   const location = useLocation();
 
   return (
@@ -20,7 +19,7 @@ export const BottomNavbar = ({ user }: BottomNavbarProps) => {
             location.pathname === "/" ? "text-fuchsia-400" : ""
           }`}
         >
-          <Home className="mb-1 h-6 w-6" />
+          <HomeIcon className="mb-1 h-6 w-6" />
           <span className="text-sm">Home</span>
         </Link>
         <Link
@@ -29,31 +28,37 @@ export const BottomNavbar = ({ user }: BottomNavbarProps) => {
             location.pathname === "/artist" ? "text-fuchsia-400" : ""
           }`}
         >
-          <Palette className="mb-1 h-6 w-6" />
+          <PaletteIcon className="mb-1 h-6 w-6" />
           <span className="text-sm">Artist</span>
         </Link>
-        <Link
-          to="/dashboard"
-          className={`flex flex-col items-center ${
-            location.pathname === "/dashboard" ? "text-fuchsia-400" : ""
-          }`}
-        >
-          <CircleGauge className="mb-1 h-6 w-6" />
-          <span className="text-sm">Dashboard</span>
-        </Link>
-        <Link
-          to={user ? "/logout" : "/login"}
-          className={`flex flex-col items-center ${
-            location.pathname.startsWith("/login") ||
-            location.pathname.startsWith("/register") ||
-            location.pathname === "/logout"
-              ? "text-fuchsia-400"
-              : ""
-          }`}
-        >
-          <User className="mb-1 h-6 w-6" />
-          <span className="text-sm">{user ? "Logout" : "Login"}</span>
-        </Link>
+
+        {isAuthenticated && (
+          <Link
+            to="/dashboard"
+            className={`flex flex-col items-center ${
+              location.pathname === "/dashboard" ? "text-fuchsia-400" : ""
+            }`}
+          >
+            <CircleGaugeIcon className="mb-1 h-6 w-6" />
+            <span className="text-sm">Dashboard</span>
+          </Link>
+        )}
+
+        {!isAuthenticated && (
+          <Link
+            to={user ? "/logout" : "/login"}
+            className={`flex flex-col items-center ${
+              location.pathname.startsWith("/login") ||
+              location.pathname.startsWith("/register") ||
+              location.pathname === "/logout"
+                ? "text-fuchsia-400"
+                : ""
+            }`}
+          >
+            <UserIcon className="mb-1 h-6 w-6" />
+            <span className="text-sm">{user ? "Logout" : "Login"}</span>
+          </Link>
+        )}
       </div>
     </nav>
   );

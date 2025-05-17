@@ -1,15 +1,12 @@
-import { Outlet, useLoaderData } from "react-router";
+import { Outlet } from "react-router";
 import { Header } from "~/components/header";
 import { BottomNavbar } from "~/components/bottom-navbar";
-import type { Route } from "../+types/root";
+import type { Route } from "./+types/layout";
 import { getSession } from "~/sessions.server";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get("Cookie"));
-
-  if (!session.has("token")) {
-    return null;
-  }
+  if (!session.has("token")) return { isAuthenticated: false, user: null };
 
   const token = session.get("token");
 
@@ -19,20 +16,17 @@ export async function loader({ request }: Route.LoaderArgs) {
       Authorization: `Bearer ${token}`,
     },
   });
+  if (!response.ok) return { isAuthenticated: false, user: null };
 
-  if (!response.ok) {
-    return null;
-  }
-
-  const userData = await response.json();
-  return userData;
+  const user = await response.json();
+  return { isAuthenticated: true, user };
 }
 
-export default function Layout() {
-  const user = useLoaderData<typeof loader>();
+export default function Layout({ loaderData }: Route.ComponentProps) {
+  const { isAuthenticated, user } = loaderData;
 
   return (
-    <div className="bg-background no-scrollbar fixed relative mx-auto min-h-screen w-full max-w-[500px] overflow-auto">
+    <div className="bg-background no-scrollbar relative mx-auto min-h-screen w-full max-w-[500px] overflow-auto">
       <div className="fixed top-0 left-1/2 z-10 w-full max-w-[500px] -translate-x-1/2">
         <Header />
       </div>
@@ -42,7 +36,7 @@ export default function Layout() {
       </div>
 
       <div className="fixed bottom-0 left-1/2 w-full max-w-[500px] -translate-x-1/2">
-        <BottomNavbar user={user} />
+        <BottomNavbar isAuthenticated={isAuthenticated} user={user} />
       </div>
     </div>
   );
