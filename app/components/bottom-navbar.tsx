@@ -44,21 +44,19 @@ export const BottomNavbar = ({ isAuthenticated, user }: BottomNavbarProps) => {
           </Link>
         )}
 
-        {!isAuthenticated && (
-          <Link
-            to={user ? "/logout" : "/login"}
-            className={`flex flex-col items-center ${
-              location.pathname.startsWith("/login") ||
-              location.pathname.startsWith("/register") ||
-              location.pathname === "/logout"
-                ? "text-fuchsia-400"
-                : ""
-            }`}
-          >
-            <UserIcon className="mb-1 h-6 w-6" />
-            <span className="text-sm">{user ? "Logout" : "Login"}</span>
-          </Link>
-        )}
+        <Link
+          to={user ? "/logout" : "/login"}
+          className={`flex flex-col items-center ${
+            location.pathname.startsWith("/login") ||
+            location.pathname.startsWith("/register") ||
+            location.pathname === "/logout"
+              ? "text-fuchsia-400"
+              : ""
+          }`}
+        >
+          <UserIcon className="mb-1 h-6 w-6" />
+          <span className="text-sm">{user ? "Logout" : "Login"}</span>
+        </Link>
       </div>
     </nav>
   );
