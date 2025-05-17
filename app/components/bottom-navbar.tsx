@@ -29,7 +29,7 @@ export const BottomNavbar = ({ isAuthenticated, user }: BottomNavbarProps) => {
           }`}
         >
           <PaletteIcon className="mb-1 h-6 w-6" />
-          <span className="text-sm">Artist</span>
+          <span className="text-sm">Artists</span>
         </Link>
 
         {isAuthenticated && (

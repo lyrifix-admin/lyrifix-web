@@ -2,10 +2,10 @@ import type { Route } from "./+types/artist";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Artist - Lyrifix" },
+    { title: "Artists - Lyrifix" },
     {
       name: "description",
-      content: "Artist page of Lyrifix. Fix the lyric, Feel the music.",
+      content: "Discover artists and their music on Lyrifix.",
     },
   ];
 }
@@ -13,7 +13,7 @@ export function meta({}: Route.MetaArgs) {
 export default function ArtistRoute() {
   return (
     <div className="p-6 text-white">
-      <h1 className="text-2xl font-bold">Artist</h1>
+      <h1 className="text-2xl font-bold">Artists</h1>
     </div>
   );
 }
