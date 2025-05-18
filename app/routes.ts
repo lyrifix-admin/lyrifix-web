@@ -15,5 +15,6 @@ export default [
     route("/dashboard", "routes/dashboard.tsx"),
     route("/artist", "routes/artist.tsx"),
     route("/logout", "routes/logout.tsx"),
+    route("/add-song", "routes/add-song.tsx"),
   ]),
 ] satisfies RouteConfig;
