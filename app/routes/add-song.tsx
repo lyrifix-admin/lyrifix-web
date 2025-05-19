@@ -1,17 +1,20 @@
 import { getFormProps, getInputProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { Plus } from "lucide-react";
+import { useState } from "react";
 import { Form, href, redirect } from "react-router";
+
 import MultiselectArtists from "~/components/multiselect-artists";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
+import type { Option } from "~/components/ui/multiselect";
 import type { paths } from "~/schema";
 import type { Artist } from "~/schemas/artist";
 import { CreateSongSchema } from "~/schemas/song";
 import { getSession } from "~/sessions.server";
 import type { Route } from "./+types/add-song";
-import { Label } from "~/components/ui/label";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get("Cookie"));
@@ -87,6 +90,18 @@ export default function AddSongRoute({
     },
   });
 
+  const defaultOptions: Option[] = artists.map((artist) => ({
+    value: artist.id,
+    label: artist.name,
+  }));
+
+  const [artistOptions, setArtistOptions] = useState<Option[]>([]);
+
+  const handleChangeArtistOptions = (options: Option[]) => {
+    setArtistOptions(options);
+    console.log("Artist Options:", options);
+  };
+
   return (
     <div className="flex flex-col items-center pt-10">
       <Card className="w-xs">
@@ -128,10 +143,14 @@ export default function AddSongRoute({
 
               <div className="flex flex-col gap-1">
                 <Label htmlFor={fields.artistOptions.id}>Select Artists</Label>
+                <input
+                  {...getInputProps(fields.artistOptions, { type: "text" })}
+                  className="hidden"
+                />
                 <MultiselectArtists
-                  data={artists}
-                  key={fields.artistOptions.key}
-                  name={fields.artistOptions.name}
+                  defaultOptions={defaultOptions}
+                  artistOptions={artistOptions}
+                  handleChangeArtistOptions={handleChangeArtistOptions}
                   id="artist"
                   placeholder="Type artist name..."
                   className="border-zinc-700 bg-zinc-800"

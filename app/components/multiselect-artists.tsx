@@ -1,41 +1,31 @@
-import { useState } from "react";
 import MultipleSelector from "~/components/ui/multiselect";
 import type { Option } from "~/components/ui/multiselect";
-import type { Artist } from "~/schemas/artist";
 
-type MultiselectArtistsProps = {
-  data: Artist[];
+interface MultiselectArtistsProps {
+  defaultOptions: Option[];
+  artistOptions: Option[];
+  handleChangeArtistOptions: (options: Option[]) => void;
   name?: string;
   id?: string;
   placeholder?: string;
   className?: string;
-};
+}
 
 export default function MultiselectArtists({
-  data,
+  defaultOptions,
+  artistOptions,
+  handleChangeArtistOptions,
   placeholder,
   className,
 }: MultiselectArtistsProps) {
-  const options: Option[] = data.map((artist) => ({
-    value: artist.id,
-    label: artist.name,
-  }));
-
-  const [selectedOptions, setSelectedOptions] = useState<Option[]>([]);
-
-  const handleValueChange = (options: Option[]) => {
-    setSelectedOptions(options);
-    console.log("Selected options:", options);
-  };
-
   return (
     <div className="*:not-first:mt-2">
       <MultipleSelector
-        value={selectedOptions}
-        onChange={handleValueChange}
+        defaultOptions={defaultOptions}
+        value={artistOptions}
+        onChange={handleChangeArtistOptions}
         className={className}
         placeholder={placeholder || "Select artists"}
-        defaultOptions={options}
         emptyIndicator={<p className="text-center text-sm">No results found</p>}
         commandProps={{ label: "Select artists" }}
       />
