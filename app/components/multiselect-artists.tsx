@@ -1,3 +1,4 @@
+import { useState } from "react";
 import MultipleSelector from "~/components/ui/multiselect";
 import type { Option } from "~/components/ui/multiselect";
 import type { Artist } from "~/schemas/artist";
@@ -20,9 +21,18 @@ export default function MultiselectArtists({
     label: artist.name,
   }));
 
+  const [selectedOptions, setSelectedOptions] = useState<Option[]>([]);
+
+  const handleValueChange = (options: Option[]) => {
+    setSelectedOptions(options);
+    console.log("Selected options:", options);
+  };
+
   return (
     <div className="*:not-first:mt-2">
       <MultipleSelector
+        value={selectedOptions}
+        onChange={handleValueChange}
         className={className}
         placeholder={placeholder || "Select artists"}
         defaultOptions={options}
