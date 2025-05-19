@@ -14,11 +14,11 @@ export const SongSchema = z.object({
 });
 
 export const SongsSchema = z.array(SongSchema);
+
 export const CreateSongSchema = z.object({
-  imageUrl: z.string().min(1), // TODO: upload image
+  imageUrl: z.string().min(1),
   title: z.string().min(1),
-  artist: z.string().min(1), // TODO: artistsId?
-  lyric: z.string().min(1), // TODO: lyric
+  artistIds: z.array(z.string().min(1)), // Array of artist IDs
 });
 
 export type Song = z.infer<typeof SongSchema>;

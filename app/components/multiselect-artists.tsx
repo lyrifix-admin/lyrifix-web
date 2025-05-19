@@ -5,7 +5,6 @@ import type { Artist } from "~/schemas/artist";
 type MultiselectArtistsProps = {
   data: Artist[];
   name?: string;
-  defaultValue?: string | string[];
   id?: string;
   placeholder?: string;
   className?: string;
@@ -28,9 +27,7 @@ export default function MultiselectArtists({
         placeholder={placeholder || "Select artists"}
         defaultOptions={options}
         emptyIndicator={<p className="text-center text-sm">No results found</p>}
-        commandProps={{
-          label: "Select artists",
-        }}
+        commandProps={{ label: "Select artists" }}
       />
     </div>
   );

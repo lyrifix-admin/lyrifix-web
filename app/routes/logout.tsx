@@ -3,13 +3,16 @@ import { getSession, destroySession } from "../sessions.server";
 import type { Route } from "./+types/logout";
 import { Form, redirect, Link } from "react-router";
 
+export async function loader({ request }: Route.LoaderArgs) {
+  const session = await getSession(request.headers.get("Cookie"));
+  const token = session.get("token");
+  if (!token) return redirect("/login");
+}
+
 export async function action({ request }: Route.ActionArgs) {
   const session = await getSession(request.headers.get("Cookie"));
-
   return redirect("/login", {
-    headers: {
-      "Set-Cookie": await destroySession(session),
-    },
+    headers: { "Set-Cookie": await destroySession(session) },
   });
 }
 

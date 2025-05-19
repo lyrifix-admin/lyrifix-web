@@ -1,70 +1,85 @@
-import { Input } from "~/components/ui/input";
-import { Button } from "~/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "~/components/ui/card";
-import { Plus } from "lucide-react";
-import { Form, redirect } from "react-router";
-import type { Route } from "./+types/add-song";
 import { useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
+import { Plus } from "lucide-react";
+import { Form, href, redirect } from "react-router";
+import MultiselectArtists from "~/components/multiselect-artists";
+import { Button } from "~/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { Input } from "~/components/ui/input";
+import type { paths } from "~/schema";
+import type { Artist } from "~/schemas/artist";
 import { CreateSongSchema } from "~/schemas/song";
 import { getSession } from "~/sessions.server";
-import MultiselectArtists from "~/components/multiselect-artists";
-import type { Artist } from "~/schemas/artist";
+import type { Route } from "./+types/add-song";
 
-export async function action({ request }: Route.ClientActionArgs) {
-  const formData = await request.formData();
-  const submission = parseWithZod(formData, { schema: CreateSongSchema });
-
-  if (submission.status !== "success") {
-    return submission.reply();
-  }
-
+export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get("Cookie"));
   const token = session.get("token");
+  if (!token) return redirect("/login");
 
-  const response = await fetch(`${process.env.BACKEND_API_URL}/songs`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(submission.value),
-  });
-  if (!response.ok) {
-    console.error(await response.json());
-
-    return null;
-  }
-
-  return redirect("/add-song");
-}
-export async function loader({ request }: Route.LoaderArgs) {
   try {
     const response = await fetch(`${process.env.BACKEND_API_URL}/artists`);
     if (!response.ok) {
       throw new Error("Failed to fetch song data");
     }
-    const artist: Artist[] = await response.json();
-    return { artist };
+    const artists: Artist[] = await response.json();
+    return { artists };
   } catch (error) {
     console.error(error);
     throw new Response("Song not found", { status: 404 });
   }
 }
 
-export default function AddSong({
+export type ActionSuccessResponse =
+  paths["/songs"]["post"]["responses"][200]["content"]["application/json"];
+
+export async function action({ request }: Route.ClientActionArgs) {
+  const formData = await request.formData();
+  const submission = parseWithZod(formData, { schema: CreateSongSchema });
+
+  console.log(submission);
+
+  if (submission.status !== "success") return submission.reply();
+
+  const session = await getSession(request.headers.get("Cookie"));
+  const token = session.get("token");
+  if (!token) return redirect("/login");
+
+  console.log(token);
+
+  console.log(submission.value);
+
+  return redirect(href("/add-song"));
+
+  // const response = await fetch(`${process.env.BACKEND_API_URL}/songs`, {
+  //   method: "POST",
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //     Authorization: `Bearer ${token}`,
+  //   },
+  //   body: JSON.stringify(submission.value),
+  // });
+  // if (!response.ok) return submission.reply();
+
+  // const song: SuccessResponse = await response.json();
+
+  // return redirect(href("/songs/:slug", { slug: song.slug }));
+}
+
+export default function AddSongRoute({
   actionData,
   loaderData,
 }: Route.ComponentProps) {
+  const { artists } = loaderData;
+
   const [form, fields] = useForm({
-    lastResult: actionData,
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: CreateSongSchema });
     },
+    lastResult: actionData,
     shouldValidate: "onBlur",
     shouldRevalidate: "onBlur",
   });
-  const artists = loaderData.artist;
 
   return (
     <div className="flex flex-col items-center pt-10">
@@ -93,7 +108,7 @@ export default function AddSong({
                   name={fields.title.name}
                   defaultValue={fields.title.initialValue}
                   id="title"
-                  placeholder="Title"
+                  placeholder="Song Title"
                   className="border-zinc-700 bg-zinc-800"
                 />
                 <p className="text-sm text-red-500">{fields.title.errors}</p>
@@ -101,27 +116,16 @@ export default function AddSong({
 
               <div className="flex flex-col gap-1">
                 <MultiselectArtists
-                  key={fields.artist.key}
-                  name={fields.artist.name}
-                  defaultValue={fields.artist.initialValue}
                   data={artists}
+                  key={fields.artistIds.key}
+                  name={fields.artistIds.name}
                   id="artist"
-                  placeholder="Artist"
+                  placeholder="Select Artists"
                   className="border-zinc-700 bg-zinc-800"
                 />
-                <p className="text-sm text-red-500">{fields.artist.errors}</p>
-              </div>
-
-              <div className="flex flex-col gap-1">
-                <Input
-                  key={fields.lyric.key}
-                  name={fields.lyric.name}
-                  defaultValue={fields.lyric.initialValue}
-                  id="lyric"
-                  placeholder="Lyric"
-                  className="border-zinc-700 bg-zinc-800"
-                />
-                <p className="text-sm text-red-500">{fields.lyric.errors}</p>
+                <p className="text-sm text-red-500">
+                  {fields.artistIds.errors}
+                </p>
               </div>
             </div>
 
