@@ -8,3 +8,5 @@
 
 .netlify
 *.tsbuildinfo
+
+schema.d.ts

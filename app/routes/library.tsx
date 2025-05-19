@@ -1,8 +1,12 @@
-import { destroySession, getSession } from "~/sessions.server";
-import type { Route } from "./+types/dashboard";
+import { PlusIcon } from "lucide-react";
 import { Link, redirect } from "react-router";
 import { Card, CardContent } from "~/components/ui/card";
-import { PlusIcon } from "lucide-react";
+import type { paths } from "~/schema";
+import { destroySession, getSession } from "~/sessions.server";
+import type { Route } from "./+types/library";
+
+type SuccessResponse =
+  paths["/library"]["get"]["responses"][200]["content"]["application/json"];
 
 export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get("Cookie"));
@@ -12,9 +16,8 @@ export async function loader({ request }: Route.LoaderArgs) {
   }
 
   const token = session.get("token");
-  console.info("dashboard:token", token);
 
-  const response = await fetch(`${process.env.BACKEND_API_URL}/auth/me`, {
+  const response = await fetch(`${process.env.BACKEND_API_URL}/library`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -28,17 +31,18 @@ export async function loader({ request }: Route.LoaderArgs) {
     });
   }
 
-  const userData = await response.json();
-  console.info({ userData });
+  const library: SuccessResponse = await response.json();
 
-  return userData;
+  return { library };
 }
 
-export default function Dashboard({ loaderData }: Route.ComponentProps) {
+export default function LibraryRoute({ loaderData }: Route.ComponentProps) {
+  const { library } = loaderData;
+
   return (
     <div className="p-6 text-white">
       <h1 className="text-2xl font-bold">Your Library</h1>
-      <p className="mb-4 text-lg">Welcome back, {loaderData.fullName}!</p>
+      <p className="mb-4 text-lg">Welcome back, {library.user.fullName}!</p>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
         <Card className="flex flex-col items-center justify-center gap-4 p-6 text-white">

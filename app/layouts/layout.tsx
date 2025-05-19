@@ -3,6 +3,10 @@ import { Header } from "~/components/header";
 import { BottomNavbar } from "~/components/bottom-navbar";
 import type { Route } from "./+types/layout";
 import { getSession } from "~/sessions.server";
+import type { paths } from "~/schema";
+
+type SuccessResponse =
+  paths["/auth/me"]["get"]["responses"][200]["content"]["application/json"];
 
 export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get("Cookie"));
@@ -18,7 +22,10 @@ export async function loader({ request }: Route.LoaderArgs) {
   });
   if (!response.ok) return { isAuthenticated: false, user: null };
 
-  const user = await response.json();
+  const user: SuccessResponse = await response.json();
+
+  session.set("user", user);
+
   return { isAuthenticated: true, user };
 }
 

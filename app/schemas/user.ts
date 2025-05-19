@@ -1,8 +1,9 @@
 import { z } from "zod";
 
-const name = z.string();
+const username = z.string();
+const fullName = z.string();
 const email = z.string().email();
 
-export const UserSchema = z.object({ name, email });
+export const UserSchema = z.object({ username, fullName, email });
 
 export type User = z.infer<typeof UserSchema>;

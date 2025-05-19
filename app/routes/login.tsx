@@ -1,4 +1,4 @@
-import { data, Form, redirect } from "react-router";
+import { data, Form, href, redirect } from "react-router";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
@@ -19,10 +19,10 @@ export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get("Cookie"));
 
   if (session.has("token")) {
-    return redirect("/dashboard");
+    return redirect(href("/library"));
   }
 
-  console.log("token:", session.get("token"));
+  // console.log("token:", session.get("token"));
 
   return data(
     { error: session.get("error") },
@@ -43,14 +43,14 @@ export async function action({ request }: Route.ClientActionArgs) {
     return submission.reply();
   }
 
-  console.log(submission.value);
+  // console.log(submission.value);
+
   const response = await fetch(`${process.env.BACKEND_API_URL}/auth/login`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(submission.value),
   });
+
   if (!response.ok) {
     session.flash("error", "Invalid username/password");
     return redirect("/login", {
@@ -59,11 +59,12 @@ export async function action({ request }: Route.ClientActionArgs) {
       },
     });
   }
+
   const loginResult: { token: string } = await response.json();
 
   session.set("token", loginResult.token);
 
-  return redirect("/dashboard", {
+  return redirect(href("/library"), {
     headers: {
       "Set-Cookie": await commitSession(session),
     },

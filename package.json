@@ -3,10 +3,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "bun typecheck && react-router build",
-    "dev": "react-router dev",
+    "dev": "bun generate && react-router dev",
+    "build": "bun generate:prod && react-router build",
     "start": "react-router-serve ./build/server/index.js",
-    "typecheck": "react-router typegen && tsc -b"
+    "typecheck": "react-router typegen && tsc -b",
+    "generate": "openapi-typescript http://localhost:3000/openapi.json -o app/schema.d.ts",
+    "generate:prod": "openapi-typescript https://lyrifix-api.onrender.com/openapi.json -o app/schema.d.ts"
   },
   "dependencies": {
     "@conform-to/react": "^1.5.1",
@@ -33,19 +35,20 @@
     "@netlify/vite-plugin-react-router": "^1.0.1",
     "@react-router/dev": "^7.6.0",
     "@tailwindcss/vite": "^4.1.7",
+    "@types/bun": "latest",
     "@types/react": "^19.1.4",
     "@types/react-dom": "^19.1.5",
     "eslint": "^9.27.0",
     "eslint-plugin-react": "^7.37.5",
     "globals": "^16.1.0",
+    "openapi-typescript": "^7.8.0",
     "prettier": "3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.11",
     "tailwindcss": "^4.1.7",
     "tw-animate-css": "^1.3.0",
     "typescript-eslint": "^8.32.1",
     "vite": "^6.3.5",
-    "vite-tsconfig-paths": "^5.1.4",
-    "@types/bun": "latest"
+    "vite-tsconfig-paths": "^5.1.4"
   },
   "peerDependencies": {
     "typescript": "^5.8.3"

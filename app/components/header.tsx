@@ -12,10 +12,6 @@ export function Header() {
         />
       </a>
 
-      {/* <a href="/dashboard" className="text-white hover:underline">
-        Dashboard
-      </a> */}
-
       <div className="flex flex-row items-center">
         <Form method="get" action="/search" className="">
           <Input

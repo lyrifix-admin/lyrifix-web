@@ -28,19 +28,21 @@ export async function action({ request }: Route.ClientActionArgs) {
     return submission.reply();
   }
 
-  console.log(submission.value);
+  // console.log(submission.value);
+
   const response = await fetch(`${process.env.BACKEND_API_URL}/auth/register`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(submission.value),
   });
+
   if (!response.ok) {
     return null;
   }
-  const registerResponse = await response.json();
-  console.log(registerResponse);
+  await response.json();
+
+  // console.log(registerResponse);
+
   return redirect("/login");
 }
 
