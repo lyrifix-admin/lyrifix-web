@@ -12,13 +12,7 @@ import { useState } from "react";
 import { commitSession, getSession } from "~/sessions.server";
 
 export function meta({}: Route.MetaArgs) {
-  return [
-    { title: "Login Lyrifix" },
-    {
-      name: "description",
-      content: "Login to Lyrifix. Fix the lyric, Feel the music.",
-    },
-  ];
+  return [{ title: "Login to Lyrifix" }];
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
