@@ -1,4 +1,4 @@
-import { useForm } from "@conform-to/react";
+import { getFormProps, getInputProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { Plus } from "lucide-react";
 import { Form, href, redirect } from "react-router";
@@ -11,6 +11,7 @@ import type { Artist } from "~/schemas/artist";
 import { CreateSongSchema } from "~/schemas/song";
 import { getSession } from "~/sessions.server";
 import type { Route } from "./+types/add-song";
+import { Label } from "~/components/ui/label";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get("Cookie"));
@@ -79,6 +80,11 @@ export default function AddSongRoute({
     lastResult: actionData,
     shouldValidate: "onBlur",
     shouldRevalidate: "onBlur",
+    defaultValue: {
+      imageUrl: "https://placehold.co/500x500/EEE/31343C",
+      title: "",
+      artistOptions: [],
+    },
   });
 
   return (
@@ -89,12 +95,20 @@ export default function AddSongRoute({
         </CardHeader>
 
         <CardContent>
-          <Form method="post" className="mr-4 ml-4" onSubmit={form.onSubmit}>
+          <Form method="post" {...getFormProps(form)} className="mr-4 ml-4">
             <label
               className="mb-10 flex cursor-pointer flex-col items-center"
-              htmlFor="photo"
+              htmlFor={fields.imageUrl.id}
             >
-              <Input type="file" className="hidden" id="photo" />
+              {/* TODO: Use an Uploader component
+              there's an uploadedImage object, but not yet the imageUrl
+              imageUrl will be in another separated input
+              */}
+
+              <input
+                {...getInputProps(fields.imageUrl, { type: "text" })}
+                className="hidden"
+              />
               <div className="flex h-16 w-16 items-center justify-center">
                 <Plus className="h-10 w-10 text-white" />
               </div>
@@ -103,11 +117,9 @@ export default function AddSongRoute({
 
             <div className="flex flex-col gap-6">
               <div className="flex flex-col gap-1">
+                <Label htmlFor={fields.title.id}>Song Title</Label>
                 <Input
-                  key={fields.title.key}
-                  name={fields.title.name}
-                  defaultValue={fields.title.initialValue}
-                  id="title"
+                  {...getInputProps(fields.title, { type: "text" })}
                   placeholder="Song Title"
                   className="border-zinc-700 bg-zinc-800"
                 />
@@ -115,16 +127,17 @@ export default function AddSongRoute({
               </div>
 
               <div className="flex flex-col gap-1">
+                <Label htmlFor={fields.artistOptions.id}>Select Artists</Label>
                 <MultiselectArtists
                   data={artists}
-                  key={fields.artistIds.key}
-                  name={fields.artistIds.name}
+                  key={fields.artistOptions.key}
+                  name={fields.artistOptions.name}
                   id="artist"
-                  placeholder="Select Artists"
+                  placeholder="Type artist name..."
                   className="border-zinc-700 bg-zinc-800"
                 />
                 <p className="text-sm text-red-500">
-                  {fields.artistIds.errors}
+                  {fields.artistOptions.errors}
                 </p>
               </div>
             </div>
