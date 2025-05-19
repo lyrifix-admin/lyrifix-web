@@ -8,6 +8,8 @@ import { useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { CreateSongSchema } from "~/schemas/song";
 import { getSession } from "~/sessions.server";
+import MultiselectArtists from "~/components/multiselect-artists";
+import type { Artist } from "~/schemas/artist";
 
 export async function action({ request }: Route.ClientActionArgs) {
   const formData = await request.formData();
@@ -36,8 +38,24 @@ export async function action({ request }: Route.ClientActionArgs) {
 
   return redirect("/add-song");
 }
+export async function loader({ request }: Route.LoaderArgs) {
+  try {
+    const response = await fetch(`${process.env.BACKEND_API_URL}/artists`);
+    if (!response.ok) {
+      throw new Error("Failed to fetch song data");
+    }
+    const artist: Artist[] = await response.json();
+    return { artist };
+  } catch (error) {
+    console.error(error);
+    throw new Response("Song not found", { status: 404 });
+  }
+}
 
-export default function AddSong({ actionData }: Route.ComponentProps) {
+export default function AddSong({
+  actionData,
+  loaderData,
+}: Route.ComponentProps) {
   const [form, fields] = useForm({
     lastResult: actionData,
     onValidate({ formData }) {
@@ -46,6 +64,7 @@ export default function AddSong({ actionData }: Route.ComponentProps) {
     shouldValidate: "onBlur",
     shouldRevalidate: "onBlur",
   });
+  const artists = loaderData.artist;
 
   return (
     <div className="flex flex-col items-center pt-10">
@@ -81,10 +100,11 @@ export default function AddSong({ actionData }: Route.ComponentProps) {
               </div>
 
               <div className="flex flex-col gap-1">
-                <Input
+                <MultiselectArtists
                   key={fields.artist.key}
                   name={fields.artist.name}
                   defaultValue={fields.artist.initialValue}
+                  data={artists}
                   id="artist"
                   placeholder="Artist"
                   className="border-zinc-700 bg-zinc-800"
