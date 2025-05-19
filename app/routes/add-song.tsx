@@ -1,4 +1,9 @@
-import { getFormProps, getInputProps, useForm } from "@conform-to/react";
+import {
+  getFormProps,
+  getInputProps,
+  useForm,
+  useInputControl,
+} from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { Plus } from "lucide-react";
 import { useState } from "react";
@@ -15,6 +20,10 @@ import type { Artist } from "~/schemas/artist";
 import { CreateSongSchema } from "~/schemas/song";
 import { getSession } from "~/sessions.server";
 import type { Route } from "./+types/add-song";
+
+export function meta({}: Route.MetaArgs) {
+  return [{ title: "Add New Song to Lyrifix" }];
+}
 
 export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get("Cookie"));
@@ -49,25 +58,21 @@ export async function action({ request }: Route.ClientActionArgs) {
   const token = session.get("token");
   if (!token) return redirect("/login");
 
-  console.log(token);
+  const response = await fetch(`${process.env.BACKEND_API_URL}/songs`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(submission.value),
+  });
+  if (!response.ok) return submission.reply();
 
-  console.log(submission.value);
+  const song: ActionSuccessResponse = await response.json();
 
-  return redirect(href("/add-song"));
+  console.log({ song });
 
-  // const response = await fetch(`${process.env.BACKEND_API_URL}/songs`, {
-  //   method: "POST",
-  //   headers: {
-  //     "Content-Type": "application/json",
-  //     Authorization: `Bearer ${token}`,
-  //   },
-  //   body: JSON.stringify(submission.value),
-  // });
-  // if (!response.ok) return submission.reply();
-
-  // const song: SuccessResponse = await response.json();
-
-  // return redirect(href("/songs/:slug", { slug: song.slug }));
+  return redirect(href("/songs/:slug", { slug: song.slug }));
 }
 
 export default function AddSongRoute({
@@ -86,20 +91,24 @@ export default function AddSongRoute({
     defaultValue: {
       imageUrl: "https://placehold.co/500x500/EEE/31343C",
       title: "",
-      artistOptions: [],
+      artistIds: [], // ["abc", "def"],
     },
   });
+
+  const artistIdsFieldList = fields.artistIds.getFieldList();
 
   const defaultOptions: Option[] = artists.map((artist) => ({
     value: artist.id,
     label: artist.name,
   }));
 
-  const [artistOptions, setArtistOptions] = useState<Option[]>([]);
+  const controlArtistIds = useInputControl(fields.artistIds); // Conform
+  const [artistOptions, setArtistOptions] = useState<Option[]>([]); // Multiselect
 
   const handleChangeArtistOptions = (options: Option[]) => {
-    setArtistOptions(options);
-    console.log("Artist Options:", options);
+    setArtistOptions(options); // [{value: "abc", label: "Artist"}]
+    const artistIds = options.map((option) => option.value); // ["abc", "def"]
+    controlArtistIds.change(artistIds);
   };
 
   return (
@@ -142,11 +151,8 @@ export default function AddSongRoute({
               </div>
 
               <div className="flex flex-col gap-1">
-                <Label htmlFor={fields.artistOptions.id}>Select Artists</Label>
-                <input
-                  {...getInputProps(fields.artistOptions, { type: "text" })}
-                  className="hidden"
-                />
+                <Label htmlFor={fields.artistIds.id}>Select Artists</Label>
+
                 <MultiselectArtists
                   defaultOptions={defaultOptions}
                   artistOptions={artistOptions}
@@ -156,8 +162,17 @@ export default function AddSongRoute({
                   className="border-zinc-700 bg-zinc-800"
                 />
                 <p className="text-sm text-red-500">
-                  {fields.artistOptions.errors}
+                  {fields.artistIds.errors}
                 </p>
+
+                <ul>
+                  {artistIdsFieldList.map((artistId) => (
+                    <li key={artistId.key}>
+                      <input name={artistId.name} />
+                      <div>{artistId.errors}</div>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
 

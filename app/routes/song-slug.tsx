@@ -1,6 +1,8 @@
 import { BACKEND_API_URL } from "~/env";
 import type { Route } from "./+types/song-slug";
 import type { Song } from "~/schemas/song";
+import { Link } from "react-router";
+import { Button } from "~/components/ui/button";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -14,13 +16,12 @@ export function meta({}: Route.MetaArgs) {
 
 export async function loader({ params }: Route.LoaderArgs) {
   const { slug } = params;
+
   try {
     const response = await fetch(`${BACKEND_API_URL}/songs/${slug}`);
-    if (!response.ok) {
-      throw new Error("Failed to fetch song data");
-    }
+    if (!response.ok) throw new Error("Failed to fetch song data");
     const song: Song = await response.json();
-    return song;
+    return { song };
   } catch (error) {
     console.error(error);
     throw new Response("Song not found", { status: 404 });
@@ -28,25 +29,29 @@ export async function loader({ params }: Route.LoaderArgs) {
 }
 
 export default function SongSlug({ loaderData }: Route.ComponentProps) {
-  const song = loaderData;
+  const { song } = loaderData;
+
   return (
-    <>
-      <div className="my-8 flex flex-col items-center justify-center gap-2">
-        <img
-          src={song.imageUrl}
-          alt={song.title}
-          className="h-40 w-40 rounded-2xl object-cover"
-        />
-        <h2 className="text-center text-3xl font-bold text-white">
-          {song.title}
-        </h2>
-        <p className="text-sm text-gray-400">
-          {song.artists.map((artist) => artist.name).join(", ")}
-        </p>
-        <p className="mt-4 text-left text-lg whitespace-pre-line text-white">
-          {song.lyrics.map((lyric) => (lyric.text ? lyric.text : "")).join("")}
-        </p>
-      </div>
-    </>
+    <div className="my-8 flex flex-col items-center justify-center gap-2">
+      <img
+        src={song.imageUrl}
+        alt={song.title}
+        className="h-40 w-40 rounded-2xl object-cover"
+      />
+      <h2 className="text-center text-3xl font-bold text-white">
+        {song.title}
+      </h2>
+      <p className="text-sm text-gray-400">
+        {song.artists.map((artist) => artist.name).join(", ")}
+      </p>
+      <p className="mt-4 text-left text-lg whitespace-pre-line text-white">
+        {song.lyrics.map((lyric) => (lyric.text ? lyric.text : "")).join("")}
+      </p>
+
+      <Button asChild>
+        <Link to={`/songs/${song.slug}/add-lyric`}>Add Lyric</Link>
+        {/* use href utility */}
+      </Button>
+    </div>
   );
 }

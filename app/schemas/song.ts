@@ -18,14 +18,7 @@ export const SongsSchema = z.array(SongSchema);
 export const CreateSongSchema = z.object({
   imageUrl: z.string().min(1),
   title: z.string().min(1),
-  // Array of artist Options, not artists Id
-  // Because we still need to validate from Multiselect component
-  artistOptions: z.array(
-    z.object({
-      value: z.string(),
-      label: z.string(),
-    }),
-  ),
+  artistIds: z.array(z.string().min(1)),
 });
 
 export type Song = z.infer<typeof SongSchema>;
