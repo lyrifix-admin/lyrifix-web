@@ -22,7 +22,7 @@ export const BottomNavbar = ({ isAuthenticated, user }: BottomNavbarProps) => {
           <HomeIcon className="mb-1 h-6 w-6" />
           <span className="text-sm">Home</span>
         </Link>
-        <Link
+        {/* <Link
           to="/artist"
           className={`flex flex-col items-center ${
             location.pathname === "/artist" ? "text-fuchsia-400" : ""
@@ -30,17 +30,20 @@ export const BottomNavbar = ({ isAuthenticated, user }: BottomNavbarProps) => {
         >
           <PaletteIcon className="mb-1 h-6 w-6" />
           <span className="text-sm">Artists</span>
-        </Link>
+        </Link> */}
 
         {isAuthenticated && (
           <Link
             to="/dashboard"
             className={`flex flex-col items-center ${
-              location.pathname === "/dashboard" ? "text-fuchsia-400" : ""
+              location.pathname.startsWith("/dashboard") ||
+              location.pathname === "/add-song"
+                ? "text-fuchsia-400"
+                : ""
             }`}
           >
             <CircleGaugeIcon className="mb-1 h-6 w-6" />
-            <span className="text-sm">Dashboard</span>
+            <span className="text-sm">Your Library </span>
           </Link>
         )}
 
