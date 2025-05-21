@@ -41,8 +41,6 @@ export async function action({ request }: Route.ClientActionArgs) {
   }
   await response.json();
 
-  // console.log(registerResponse);
-
   return redirect("/login");
 }
 
@@ -80,6 +78,16 @@ export default function RegisterRoute({ actionData }: Route.ComponentProps) {
                 placeholder="John Doe"
               />
               <p className="text-sm text-red-500">{fields.fullName.errors}</p>
+            </div>
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="fullName">Username</Label>
+              <Input
+                key={fields.username.key}
+                name={fields.username.name}
+                id="username"
+                placeholder="john"
+              />
+              <p className="text-sm text-red-500">{fields.username.errors}</p>
             </div>
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="email">Email</Label>
