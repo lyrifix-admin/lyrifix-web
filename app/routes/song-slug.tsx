@@ -21,7 +21,6 @@ export async function loader({ params }: Route.LoaderArgs) {
     const song = await apiFetch<Song>(`/songs/${slug}`);
     return { song };
   } catch (error) {
-    console.error(error);
     throw new Response("Song not found", { status: 404 });
   }
 }
