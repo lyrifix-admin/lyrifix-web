@@ -2,6 +2,7 @@ import type { Route } from "./+types/search";
 import { SongCard } from "~/components/song-card";
 import { Link, redirect } from "react-router";
 import type { SearchResultsResponse } from "~/schemas/search";
+import { apiFetch } from "~/utils/api";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -19,8 +20,10 @@ export async function loader({ request }: Route.LoaderArgs) {
   if (!q) {
     return redirect("/");
   }
-  const response = await fetch(`${process.env.BACKEND_API_URL}/search?q=${q}`);
-  const results: SearchResultsResponse = await response.json();
+  // const response = await apiFetch(
+  //   `${process.env.BACKEND_API_URL}/search?q=${q}`,
+  // );
+  const results: SearchResultsResponse = await apiFetch(`/search?q=${q}`);
   return results;
 }
 
