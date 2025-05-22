@@ -2,8 +2,9 @@ import type { Route } from "./+types/home";
 import { Banner } from "~/components/banner";
 import { SongCard } from "~/components/song-card";
 import { Link } from "react-router";
-import { BACKEND_API_URL } from "~/env";
+// import { BACKEND_API_URL } from "~/env";
 import type { Songs } from "~/schemas/song";
+import { apiFetch } from "~/utils/api";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -13,8 +14,8 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export async function loader({}: Route.LoaderArgs) {
-  const response = await fetch(`${BACKEND_API_URL}/songs`);
-  const songs: Songs = await response.json();
+  // const response = await fetch(`${BACKEND_API_URL}/songs`);
+  const songs: Songs = await apiFetch<Songs>("/songs");
   return songs;
 }
 
