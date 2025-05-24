@@ -20,6 +20,7 @@ import type { Artist } from "~/schemas/artist";
 import { CreateSongSchema } from "~/schemas/song";
 import { getSession } from "~/sessions.server";
 import type { Route } from "./+types/add-song";
+import { apiWithToken } from "~/utils/api";
 
 export function meta({}: Route.MetaArgs) {
   return [{ title: "Add New Song to Lyrifix" }];
@@ -31,12 +32,8 @@ export async function loader({ request }: Route.LoaderArgs) {
   if (!token) return redirect("/login");
 
   try {
-    const response = await fetch(`${process.env.BACKEND_API_URL}/artists`);
-    if (!response.ok) {
-      throw new Error("Failed to fetch song data");
-    }
-    const artists: Artist[] = await response.json();
-    return { artists };
+    const artistsResponse = await apiWithToken<Artist[]>("/artists", { token });
+    return { artistsResponse };
   } catch (error) {
     console.error(error);
     throw new Response("Song not found", { status: 404 });
@@ -50,7 +47,7 @@ export async function action({ request }: Route.ClientActionArgs) {
   const formData = await request.formData();
   const submission = parseWithZod(formData, { schema: CreateSongSchema });
 
-  console.log(submission);
+  // console.log(submission);
 
   if (submission.status !== "success") return submission.reply();
 
@@ -58,28 +55,23 @@ export async function action({ request }: Route.ClientActionArgs) {
   const token = session.get("token");
   if (!token) return redirect("/login");
 
-  const response = await fetch(`${process.env.BACKEND_API_URL}/songs`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(submission.value),
-  });
-  if (!response.ok) return submission.reply();
-
-  const song: ActionSuccessResponse = await response.json();
-
-  console.log({ song });
-
-  return redirect(href("/songs/:slug", { slug: song.slug }));
+  try {
+    const response = await apiWithToken<ActionSuccessResponse>("/songs", {
+      method: "POST",
+      token,
+      body: submission.value,
+    });
+    return redirect(href("/songs/:slug", { slug: response.slug }));
+  } catch (error) {
+    return submission.reply();
+  }
 }
 
 export default function AddSongRoute({
   actionData,
   loaderData,
 }: Route.ComponentProps) {
-  const { artists } = loaderData;
+  const { artistsResponse } = loaderData;
 
   const [form, fields] = useForm({
     onValidate({ formData }) {
@@ -97,7 +89,7 @@ export default function AddSongRoute({
 
   const artistIdsFieldList = fields.artistIds.getFieldList();
 
-  const defaultOptions: Option[] = artists.map((artist) => ({
+  const defaultOptions: Option[] = artistsResponse.map((artist) => ({
     value: artist.id,
     label: artist.name,
   }));

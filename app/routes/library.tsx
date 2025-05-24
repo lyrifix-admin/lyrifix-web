@@ -4,6 +4,11 @@ import { Card, CardContent } from "~/components/ui/card";
 import type { paths } from "~/schema";
 import { destroySession, getSession } from "~/sessions.server";
 import type { Route } from "./+types/library";
+import { apiWithToken } from "~/utils/api";
+
+export function meta({}: Route.MetaArgs) {
+  return [{ title: "Library Lyrifix" }];
+}
 
 type SuccessResponse =
   paths["/library"]["get"]["responses"][200]["content"]["application/json"];
@@ -11,25 +16,23 @@ type SuccessResponse =
 export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get("Cookie"));
   if (!session.has("token")) return redirect("/login");
+
   const token = session.get("token");
 
-  const response = await fetch(`${process.env.BACKEND_API_URL}/library`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  if (!response.ok) {
-    session.flash("error", "Failed to check user");
+  try {
+    const library = await apiWithToken<SuccessResponse>("/library", {
+      method: "GET",
+      token: token as string,
+    });
+    return { library };
+  } catch (error) {
+    session.flash("error", "Failed to load library");
     return redirect("/login", {
-      headers: { "Set-Cookie": await destroySession(session) },
+      headers: {
+        "Set-Cookie": await destroySession(session),
+      },
     });
   }
-
-  const library: SuccessResponse = await response.json();
-
-  return { library };
 }
 
 export default function LibraryRoute({ loaderData }: Route.ComponentProps) {
