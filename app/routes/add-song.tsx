@@ -15,6 +15,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import type { Option } from "~/components/ui/multiselect";
+import SingleFileUploader from "~/components/single-uploadcare";
+
 import type { paths } from "~/schema";
 import type { Artist } from "~/schemas/artist";
 import { CreateSongSchema } from "~/schemas/song";
@@ -81,11 +83,13 @@ export default function AddSongRoute({
     shouldValidate: "onBlur",
     shouldRevalidate: "onBlur",
     defaultValue: {
-      imageUrl: "https://placehold.co/500x500/EEE/31343C",
+      imageUrl: "",
       title: "",
       artistIds: [], // ["abc", "def"],
     },
   });
+
+  const [imageUrl, setImageUrl] = useState(fields.imageUrl.initialValue ?? "");
 
   const artistIdsFieldList = fields.artistIds.getFieldList();
 
@@ -116,19 +120,24 @@ export default function AddSongRoute({
               className="mb-10 flex cursor-pointer flex-col items-center"
               htmlFor={fields.imageUrl.id}
             >
-              {/* TODO: Use an Uploader component
-              there's an uploadedImage object, but not yet the imageUrl
-              imageUrl will be in another separated input
-              */}
+              <SingleFileUploader
+                value={imageUrl}
+                onChange={(url: string) => setImageUrl(url)}
+              />
 
               <input
                 {...getInputProps(fields.imageUrl, { type: "text" })}
+                value={imageUrl}
+                readOnly
                 className="hidden"
               />
-              <div className="flex h-16 w-16 items-center justify-center">
-                <Plus className="h-10 w-10 text-white" />
-              </div>
-              <p className="text-sm text-zinc-400">Upload Photo</p>
+              {imageUrl && (
+                <img
+                  src={imageUrl}
+                  alt="Preview"
+                  className="mt-4 max-h-40 rounded shadow"
+                />
+              )}
             </label>
 
             <div className="flex flex-col gap-6">
