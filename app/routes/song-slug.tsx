@@ -1,8 +1,8 @@
-import { BACKEND_API_URL } from "~/env";
 import type { Route } from "./+types/song-slug";
 import type { Song } from "~/schemas/song";
 import { Link } from "react-router";
 import { Button } from "~/components/ui/button";
+import { apiFetch } from "~/utils/api";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -18,12 +18,9 @@ export async function loader({ params }: Route.LoaderArgs) {
   const { slug } = params;
 
   try {
-    const response = await fetch(`${BACKEND_API_URL}/songs/${slug}`);
-    if (!response.ok) throw new Error("Failed to fetch song data");
-    const song: Song = await response.json();
+    const song = await apiFetch<Song>(`/songs/${slug}`);
     return { song };
   } catch (error) {
-    console.error(error);
     throw new Response("Song not found", { status: 404 });
   }
 }

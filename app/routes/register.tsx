@@ -9,6 +9,7 @@ import { RegisterSchema } from "~/schemas/auth";
 import { parseWithZod } from "@conform-to/zod";
 import { useForm } from "@conform-to/react";
 import { Button } from "~/components/ui/button";
+import { apiPostAuth } from "~/utils/api";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -29,19 +30,17 @@ export async function action({ request }: Route.ClientActionArgs) {
   }
 
   // console.log(submission.value);
-
-  const response = await fetch(`${process.env.BACKEND_API_URL}/auth/register`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(submission.value),
-  });
-
-  if (!response.ok) {
-    return null;
+  try {
+    await apiPostAuth("/auth/register", submission.value);
+    return redirect("/login");
+  } catch (error) {
+    console.error("Register error:", error);
+    return submission.reply({
+      fieldErrors: {
+        email: ["Gagal mendaftar, silakan coba lagi."],
+      },
+    });
   }
-  await response.json();
-
-  return redirect("/login");
 }
 
 export default function RegisterRoute({ actionData }: Route.ComponentProps) {

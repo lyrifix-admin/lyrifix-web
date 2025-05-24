@@ -10,6 +10,7 @@ import { LoginSchema } from "~/schemas/auth";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { commitSession, getSession } from "~/sessions.server";
+import { apiPostAuth } from "~/utils/api";
 
 export function meta({}: Route.MetaArgs) {
   return [{ title: "Login to Lyrifix" }];
@@ -44,14 +45,18 @@ export async function action({ request }: Route.ClientActionArgs) {
   }
 
   // console.log(submission.value);
-
-  const response = await fetch(`${process.env.BACKEND_API_URL}/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(submission.value),
-  });
-
-  if (!response.ok) {
+  try {
+    const loginResult = await apiPostAuth<{ token: string }>(
+      "/auth/login",
+      submission.value,
+    );
+    session.set("token", loginResult.token);
+    return redirect(href("/library"), {
+      headers: {
+        "Set-Cookie": await commitSession(session),
+      },
+    });
+  } catch (error) {
     session.flash("error", "Invalid username/password");
     return redirect("/login", {
       headers: {
@@ -59,16 +64,6 @@ export async function action({ request }: Route.ClientActionArgs) {
       },
     });
   }
-
-  const loginResult: { token: string } = await response.json();
-
-  session.set("token", loginResult.token);
-
-  return redirect(href("/library"), {
-    headers: {
-      "Set-Cookie": await commitSession(session),
-    },
-  });
 }
 
 export default function LoginRoute({ actionData }: Route.ComponentProps) {
