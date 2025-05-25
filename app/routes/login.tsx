@@ -10,7 +10,11 @@ import { LoginSchema } from "~/schemas/auth";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { commitSession, getSession } from "~/sessions.server";
-import { apiPostAuth } from "~/utils/api";
+import { $fetch } from "~/lib/fetch";
+import type { paths } from "~/schema";
+
+type SuccessResponse =
+  paths["/auth/login"]["post"]["responses"][200]["content"]["application/json"];
 
 export function meta({}: Route.MetaArgs) {
   return [{ title: "Login to Lyrifix" }];
@@ -38,32 +42,26 @@ export async function loader({ request }: Route.LoaderArgs) {
 export async function action({ request }: Route.ClientActionArgs) {
   const session = await getSession(request.headers.get("Cookie"));
   const formData = await request.formData();
+
   const submission = parseWithZod(formData, { schema: LoginSchema });
+  if (submission.status !== "success") return submission.reply();
 
-  if (submission.status !== "success") {
-    return submission.reply();
-  }
+  const { data, error } = await $fetch<SuccessResponse>("/auth/login", {
+    method: "POST",
+    body: submission.value,
+  });
 
-  // console.log(submission.value);
-  try {
-    const loginResult = await apiPostAuth<{ token: string }>(
-      "/auth/login",
-      submission.value,
-    );
-    session.set("token", loginResult.token);
-    return redirect(href("/library"), {
-      headers: {
-        "Set-Cookie": await commitSession(session),
-      },
-    });
-  } catch (error) {
-    session.flash("error", "Invalid username/password");
-    return redirect("/login", {
-      headers: {
-        "Set-Cookie": await commitSession(session),
-      },
+  if (!data || error) {
+    return submission.reply({
+      fieldErrors: { email: ["Failed to register, try again."] },
     });
   }
+
+  session.set("token", data.token);
+
+  return redirect(href("/library"), {
+    headers: { "Set-Cookie": await commitSession(session) },
+  });
 }
 
 export default function LoginRoute({ actionData }: Route.ComponentProps) {

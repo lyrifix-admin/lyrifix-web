@@ -1,17 +1,17 @@
 import React, { useState, useRef } from "react";
-import { Button } from "~/components/ui/button";
 import { Plus } from "lucide-react";
+// import type { UploadcareFile } from "@uploadcare/react-uploader";
 
 interface SingleFileUploaderProps {
-  value: string;
+  value?: string;
   onChange: (url: string) => void;
 }
 
-export default function SingleFileUploader({
-  value,
+export function SingleFileUploader({
+  // value, // TODO: use the value
   onChange,
 }: SingleFileUploaderProps) {
-  const [file, setFile] = useState<File | null>(null);
+  const [, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -35,6 +35,7 @@ export default function SingleFileUploader({
         body: formData,
       });
 
+      // TODO: which type to use? UploadcareFile or other?
       const data = await response.json();
       if (data && data.file) {
         // Compose the CDN URL

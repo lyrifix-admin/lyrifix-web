@@ -11,7 +11,7 @@ interface MultiselectArtistsProps {
   className?: string;
 }
 
-export default function MultiselectArtists({
+export function MultiselectArtists({
   defaultOptions,
   artistOptions,
   handleChangeArtistOptions,

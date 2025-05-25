@@ -5,24 +5,27 @@ import {
   useInputControl,
 } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
-import { Plus } from "lucide-react";
 import { useState } from "react";
 import { Form, href, redirect } from "react-router";
 
-import MultiselectArtists from "~/components/multiselect-artists";
+import { MultiselectArtists } from "~/components/multiselect-artists";
+import { SingleFileUploader } from "~/components/single-uploadcare";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import type { Option } from "~/components/ui/multiselect";
-import SingleFileUploader from "~/components/single-uploadcare";
-
+import { createAuthFetch } from "~/lib/fetch";
 import type { paths } from "~/schema";
-import type { Artist } from "~/schemas/artist";
 import { CreateSongSchema } from "~/schemas/song";
 import { getSession } from "~/sessions.server";
 import type { Route } from "./+types/add-song";
-import { apiWithToken } from "~/utils/api";
+
+type LoaderSuccessResponse =
+  paths["/artists"]["get"]["responses"][200]["content"]["application/json"];
+
+export type ActionSuccessResponse =
+  paths["/songs"]["post"]["responses"][200]["content"]["application/json"];
 
 export function meta({}: Route.MetaArgs) {
   return [{ title: "Add New Song to Lyrifix" }];
@@ -33,47 +36,46 @@ export async function loader({ request }: Route.LoaderArgs) {
   const token = session.get("token");
   if (!token) return redirect("/login");
 
-  try {
-    const artistsResponse = await apiWithToken<Artist[]>("/artists", { token });
-    return { artistsResponse };
-  } catch (error) {
-    console.error(error);
-    throw new Response("Song not found", { status: 404 });
-  }
-}
+  const $fetch = createAuthFetch(token);
 
-export type ActionSuccessResponse =
-  paths["/songs"]["post"]["responses"][200]["content"]["application/json"];
+  const { data: artists, error } =
+    await $fetch<LoaderSuccessResponse>("/artists");
+
+  if (!artists || error) throw new Response("No artists data", { status: 500 });
+
+  return { artists };
+}
 
 export async function action({ request }: Route.ClientActionArgs) {
   const formData = await request.formData();
   const submission = parseWithZod(formData, { schema: CreateSongSchema });
-
-  // console.log(submission);
-
   if (submission.status !== "success") return submission.reply();
 
   const session = await getSession(request.headers.get("Cookie"));
   const token = session.get("token");
   if (!token) return redirect("/login");
 
-  try {
-    const response = await apiWithToken<ActionSuccessResponse>("/songs", {
-      method: "POST",
-      token,
-      body: submission.value,
+  const $fetch = createAuthFetch(token);
+
+  const { data: song, error } = await $fetch<ActionSuccessResponse>("/songs", {
+    method: "POST",
+    body: submission.value,
+  });
+
+  if (!song || error) {
+    return submission.reply({
+      fieldErrors: { email: ["Failed to add song."] },
     });
-    return redirect(href("/songs/:slug", { slug: response.slug }));
-  } catch (error) {
-    return submission.reply();
   }
+
+  return redirect(href("/songs/:slug", { slug: song.slug }));
 }
 
 export default function AddSongRoute({
   actionData,
   loaderData,
 }: Route.ComponentProps) {
-  const { artistsResponse } = loaderData;
+  const { artists } = loaderData;
 
   const [form, fields] = useForm({
     onValidate({ formData }) {
@@ -93,7 +95,7 @@ export default function AddSongRoute({
 
   const artistIdsFieldList = fields.artistIds.getFieldList();
 
-  const defaultOptions: Option[] = artistsResponse.map((artist) => ({
+  const defaultOptions: Option[] = artists.map((artist) => ({
     value: artist.id,
     label: artist.name,
   }));
