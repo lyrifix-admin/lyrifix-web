@@ -156,7 +156,7 @@ const CommandEmpty = ({
   return (
     <div
       className={cn("px-2 py-4 text-center text-sm", className)}
-      cmdk-empty=""
+      // cmdk-empty=""
       role="presentation"
       {...props}
     />
@@ -232,8 +232,8 @@ const MultipleSelector = ({
           if (input.value === "" && selected.length > 0) {
             const lastSelectOption = selected[selected.length - 1];
             // If last item is fixed, we should not remove it.
-            if (!lastSelectOption.fixed) {
-              handleUnselect(selected[selected.length - 1]);
+            if (!lastSelectOption?.fixed) {
+              handleUnselect(selected[selected.length - 1]!);
             }
           }
         }
@@ -299,7 +299,6 @@ const MultipleSelector = ({
     };
 
     void exec();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearchTerm, groupBy, open, triggerSearchOnFocus]);
 
   useEffect(() => {
@@ -325,7 +324,6 @@ const MultipleSelector = ({
     };
 
     void exec();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearchTerm, groupBy, open, triggerSearchOnFocus]);
 
   const CreatableItem = () => {
