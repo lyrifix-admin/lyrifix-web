@@ -1,74 +1,42 @@
-import React, { useState, useRef } from "react";
-import { Plus } from "lucide-react";
-// import type { UploadcareFile } from "@uploadcare/react-uploader";
+import { FileUploaderRegular } from "@uploadcare/react-uploader";
+import type { OutputFileEntry } from "@uploadcare/react-uploader";
+import "@uploadcare/react-uploader/core.css";
 
 interface SingleFileUploaderProps {
   value?: string;
   onChange: (url: string) => void;
+  publicKey: string;
 }
 
 export function SingleFileUploader({
-  // value, // TODO: use the value
+  publicKey,
+  value,
   onChange,
 }: SingleFileUploaderProps) {
-  const [, setFile] = useState<File | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const selectedFile = e.target.files[0];
-      setFile(selectedFile);
-      setUploading(true);
-
-      // Upload to Uploadcare
-      const formData = new FormData();
-      formData.append("UPLOADCARE_STORE", "1");
-      formData.append(
-        "UPLOADCARE_PUB_KEY",
-        import.meta.env.VITE_UPLOADCARE_PUBLIC_KEY,
-      );
-      formData.append("file", selectedFile);
-
-      const response = await fetch("https://upload.uploadcare.com/base/", {
-        method: "POST",
-        body: formData,
-      });
-
-      // TODO: which type to use? UploadcareFile or other?
-      const data = await response.json();
-      if (data && data.file) {
-        // Compose the CDN URL
-        const cdnUrl = `https://ucarecdn.com/${data.file}/`;
-        onChange(cdnUrl);
-      }
-      setUploading(false);
-    } else {
-      setFile(null);
+  const handleChange = (data: { allEntries: OutputFileEntry[] }) => {
+    const file = data.allEntries.find((f) => f.status === "success");
+    if (file && file.cdnUrl) {
+      onChange(file.cdnUrl);
     }
   };
 
   return (
     <>
-      <div className="background-gray-100 mb-4 flex flex-col rounded p-4">
-        <input
-          id="file"
-          type="file"
-          ref={inputRef}
-          onChange={handleFileChange}
-          className="hidden"
-          accept="image/*"
+      <div className="mb-4 flex flex-col items-center">
+        <FileUploaderRegular
+          classNameUploader="uc-dark"
+          className="fileUploaderWrapper"
+          pubkey={publicKey}
+          multiple={false}
+          imgOnly
+          onChange={handleChange}
         />
-        <label
-          htmlFor="file"
-          className="flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-zinc-800 transition hover:bg-zinc-700"
-          onClick={() => inputRef.current?.click()}
-        >
-          <Plus className="h-10 w-10 text-white" />
-        </label>
-
-        {uploading && (
-          <span className="mt-2 text-xs text-zinc-400">Uploading...</span>
+        {value && (
+          <img
+            src={value}
+            alt="Preview"
+            className="mt-4 max-h-40 rounded shadow"
+          />
         )}
       </div>
     </>
