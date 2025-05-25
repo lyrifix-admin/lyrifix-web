@@ -1,9 +1,12 @@
-import type { Route } from "./+types/home";
+import { Link } from "react-router";
 import { Banner } from "~/components/banner";
 import { SongCard } from "~/components/song-card";
-import { Link } from "react-router";
-import type { Songs } from "~/schemas/song";
-import { apiFetch } from "~/utils/api";
+import { $fetch } from "~/lib/fetch";
+import type { paths } from "~/schema";
+import type { Route } from "./+types/home";
+
+type SuccessResponse =
+  paths["/songs"]["get"]["responses"][200]["content"]["application/json"];
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -13,12 +16,14 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export async function loader({}: Route.LoaderArgs) {
-  const songs: Songs = await apiFetch<Songs>("/songs");
-  return songs;
+  const { data: songs } = await $fetch<SuccessResponse>("/songs");
+  return { songs };
 }
 
 export default function Home({ loaderData }: Route.ComponentProps) {
-  const songs = loaderData;
+  const { songs } = loaderData;
+
+  if (!songs) return null;
 
   return (
     <>

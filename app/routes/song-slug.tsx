@@ -2,7 +2,7 @@ import type { Route } from "./+types/song-slug";
 import type { Song } from "~/schemas/song";
 import { Link } from "react-router";
 import { Button } from "~/components/ui/button";
-import { apiFetch } from "~/utils/api";
+import { customApiFetch } from "~/utils/api";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -18,7 +18,7 @@ export async function loader({ params }: Route.LoaderArgs) {
   const { slug } = params;
 
   try {
-    const song = await apiFetch<Song>(`/songs/${slug}`);
+    const song = await customApiFetch<Song>(`/songs/${slug}`);
     return { song };
   } catch (error) {
     throw new Response("Song not found", { status: 404 });

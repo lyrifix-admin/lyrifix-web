@@ -1,7 +1,7 @@
 import { BACKEND_API_URL } from "~/env";
 
 // GET WITHOUT TOKEN
-export async function apiFetch<T>(url: string) {
+export async function customApiFetch<T>(url: string) {
   const response = await fetch(`${BACKEND_API_URL}${url}`);
   if (!response.ok) {
     const errorText = await response.text();

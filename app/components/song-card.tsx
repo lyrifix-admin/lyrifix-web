@@ -4,7 +4,10 @@ import {
   CardDescription,
   CardTitle,
 } from "~/components/ui/card";
-import type { Song } from "~/schemas/song";
+import type { paths } from "~/schema";
+
+type Song =
+  paths["/songs"]["get"]["responses"][200]["content"]["application/json"][0];
 
 export function SongCard({ song }: { song: Song; className?: string }) {
   return (
@@ -15,7 +18,7 @@ export function SongCard({ song }: { song: Song; className?: string }) {
       }
     >
       <img
-        src={song.imageUrl}
+        src={song.imageUrl || "https://placehold.co/500x500/EEE/31343C"}
         alt={song.title}
         className="aspect-square rounded-2xl object-cover"
       />
@@ -23,7 +26,9 @@ export function SongCard({ song }: { song: Song; className?: string }) {
       <CardContent>
         <CardTitle>{song.title}</CardTitle>
         <CardDescription>
-          {song.artists.map((artist) => artist.name).join(", ")}
+          {song.artists && song.artists.length > 0 && (
+            <span>{song.artists.map((artist) => artist.name).join(", ")}</span>
+          )}
         </CardDescription>
       </CardContent>
     </Card>

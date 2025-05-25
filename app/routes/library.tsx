@@ -1,11 +1,11 @@
-import { PlusIcon, Music } from "lucide-react";
+import { Music, PlusIcon } from "lucide-react";
 import { href, Link, redirect } from "react-router";
-import { Card, CardContent } from "~/components/ui/card";
-import { Button } from "~/components/ui/button";
-import { destroySession, getSession } from "~/sessions.server";
-import { apiWithToken } from "~/utils/api";
 
+import { Button } from "~/components/ui/button";
+import { Card, CardContent } from "~/components/ui/card";
+import { createAuthFetch } from "~/lib/fetch";
 import type { paths } from "~/schema";
+import { destroySession, getSession } from "~/sessions.server";
 import type { Route } from "./+types/library";
 
 export function meta({}: Route.MetaArgs) {
@@ -17,29 +17,20 @@ type SuccessResponse =
 
 export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get("Cookie"));
-
-  if (!session.has("token")) {
-    return redirect("/login");
-  }
-
   const token = session.get("token");
+  if (!session.has("token") || !token) return redirect("/login");
 
-  try {
-    const library = await apiWithToken<SuccessResponse>("/library", {
-      method: "GET",
-      token: token as string,
-    });
+  const $fetch = createAuthFetch(token);
+  const { data: library, error } = await $fetch<SuccessResponse>("/library");
 
-    return { library };
-  } catch (error) {
-    session.flash("error", "Failed to load library");
-
+  if (error) {
+    session.flash("error", "Failed to load your library");
     return redirect("/login", {
-      headers: {
-        "Set-Cookie": await destroySession(session),
-      },
+      headers: { "Set-Cookie": await destroySession(session) },
     });
   }
+
+  return { library };
 }
 
 export default function LibraryRoute({ loaderData }: Route.ComponentProps) {
@@ -79,7 +70,7 @@ export default function LibraryRoute({ loaderData }: Route.ComponentProps) {
           </Link>
         </div>
       ) : (
-        <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <ul className="grid grid-cols-2 gap-6">
           {/* Add Song Card */}
           <li>
             <Link to="/add-song">
