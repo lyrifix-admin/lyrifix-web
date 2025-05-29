@@ -16,7 +16,7 @@ export const BottomNavbar = ({ isAuthenticated, user }: BottomNavbarProps) => {
         {/* TODO: Use NavLink built-in way to detect location */}
         <NavLink
           to="/"
-          className={`flex flex-col items-center ${
+          className={`flex flex-col items-center px-8 ${
             location.pathname === "/" ? "text-fuchsia-400" : ""
           }`}
         >
@@ -37,7 +37,7 @@ export const BottomNavbar = ({ isAuthenticated, user }: BottomNavbarProps) => {
         {isAuthenticated && user && (
           <NavLink
             to="/library"
-            className={`flex flex-col items-center ${
+            className={`flex flex-col items-center px-8 ${
               location.pathname.startsWith("/library") ||
               location.pathname === "/add-song"
                 ? "text-fuchsia-400"
@@ -52,7 +52,7 @@ export const BottomNavbar = ({ isAuthenticated, user }: BottomNavbarProps) => {
         {isAuthenticated && user && (
           <NavLink
             to="/logout"
-            className={`flex flex-col items-center ${
+            className={`flex flex-col items-center px-8 ${
               location.pathname === "/logout" ? "text-fuchsia-400" : ""
             }`}
           >
@@ -64,7 +64,7 @@ export const BottomNavbar = ({ isAuthenticated, user }: BottomNavbarProps) => {
         {!isAuthenticated && !user && (
           <NavLink
             to="/login"
-            className={`flex flex-col items-center ${
+            className={`flex flex-col items-center px-8 ${
               location.pathname.startsWith("/login") ||
               location.pathname.startsWith("/register")
                 ? "text-fuchsia-400"
