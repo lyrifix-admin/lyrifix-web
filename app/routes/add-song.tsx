@@ -20,6 +20,7 @@ import type { paths } from "~/schema";
 import { CreateSongSchema } from "~/schemas/song";
 import { getSession } from "~/sessions.server";
 import type { Route } from "./+types/add-song";
+import { set } from "zod";
 
 type LoaderSuccessResponse =
   paths["/artists"]["get"]["responses"][200]["content"]["application/json"];
@@ -43,7 +44,10 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   if (!artists || error) throw new Response("No artists data", { status: 500 });
 
-  return { artists };
+  return {
+    artists,
+    uploadcarePublicKey: process.env.VITE_UPLOADCARE_PUBLIC_KEY ?? "",
+  };
 }
 
 export async function action({ request }: Route.ClientActionArgs) {
@@ -75,7 +79,7 @@ export default function AddSongRoute({
   actionData,
   loaderData,
 }: Route.ComponentProps) {
-  const { artists } = loaderData;
+  const { artists, uploadcarePublicKey } = loaderData;
 
   const [form, fields] = useForm({
     onValidate({ formData }) {
@@ -124,7 +128,8 @@ export default function AddSongRoute({
             >
               <SingleFileUploader
                 value={imageUrl}
-                onChange={(url: string) => setImageUrl(url)}
+                onChange={setImageUrl}
+                publicKey={uploadcarePublicKey}
               />
 
               <input
@@ -133,13 +138,6 @@ export default function AddSongRoute({
                 readOnly
                 className="hidden"
               />
-              {imageUrl && (
-                <img
-                  src={imageUrl}
-                  alt="Preview"
-                  className="mt-4 max-h-40 rounded shadow"
-                />
-              )}
             </label>
 
             <div className="flex flex-col gap-6">
