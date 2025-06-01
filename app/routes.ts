@@ -9,6 +9,7 @@ export default [
   layout("layouts/layout.tsx", [
     index("routes/home.tsx"), // songs
     route("songs/:slug", "routes/song-slug.tsx"),
+    route("songs/:slug/edit", "routes/songs-slug-edit.tsx"),
     route("songs/:slug/add-lyric", "routes/songs-slug-add-lyric.tsx"),
     route("artist", "routes/artist.tsx"),
     route("search", "routes/search.tsx"),

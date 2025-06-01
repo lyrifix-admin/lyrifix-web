@@ -6,12 +6,14 @@ interface SingleFileUploaderProps {
   value?: string;
   onChange: (url: string) => void;
   publicKey: string;
+  ctxName?: string;
 }
 
 export function SingleFileUploader({
   publicKey,
   value,
   onChange,
+  ctxName,
 }: SingleFileUploaderProps) {
   const handleChange = (data: { allEntries: OutputFileEntry[] }) => {
     const file = data.allEntries.find((f) => f.status === "success");
@@ -24,6 +26,7 @@ export function SingleFileUploader({
     <>
       <div className="mb-4 flex flex-col items-center">
         <FileUploaderRegular
+          ctxName={ctxName || "single-file-uploader"}
           classNameUploader="uc-dark"
           className="fileUploaderWrapper"
           pubkey={publicKey}

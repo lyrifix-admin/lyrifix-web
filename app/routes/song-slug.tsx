@@ -51,6 +51,9 @@ export default function SongSlug({ loaderData }: Route.ComponentProps) {
             Add Lyric
           </Link>
         </Button>
+        <Button asChild size="sm">
+          <Link to={href("/songs/:slug/edit", { slug: song.slug })}>Edit</Link>
+        </Button>
       </section>
 
       <p className="mt-4 text-left text-lg whitespace-pre-line text-white">
