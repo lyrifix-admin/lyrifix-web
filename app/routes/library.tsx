@@ -90,7 +90,10 @@ export default function LibraryRoute({ loaderData }: Route.ComponentProps) {
 
           {/* Song Cards */}
           {library.songs.map((song) => (
-            <li key={song.id} className="flex h-full flex-col">
+            <li
+              key={song.id}
+              className="flex h-full flex-col transition-all duration-200 hover:scale-105"
+            >
               <Link
                 to={`/songs/${song.slug}`}
                 className="flex h-full flex-1 flex-col"
