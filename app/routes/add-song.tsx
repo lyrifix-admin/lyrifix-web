@@ -20,7 +20,6 @@ import type { paths } from "~/schema";
 import { CreateSongSchema } from "~/schemas/song";
 import { getSession } from "~/sessions.server";
 import type { Route } from "./+types/add-song";
-import { set } from "zod";
 
 type LoaderSuccessResponse =
   paths["/artists"]["get"]["responses"][200]["content"]["application/json"];
