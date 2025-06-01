@@ -53,7 +53,7 @@ export async function action({ request }: Route.ClientActionArgs) {
 
   if (!data || error) {
     return submission.reply({
-      fieldErrors: { email: ["Failed to register, try again."] },
+      fieldErrors: { email: ["Failed to login, try again."] },
     });
   }
 
