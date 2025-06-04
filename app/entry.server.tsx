@@ -17,9 +17,12 @@ export default async function (
     loadContext,
     { nonce },
   );
-  response.headers.set(
-    "Content-Security-Policy",
-    `script-src 'nonce-${nonce}'`,
-  );
+
+  if (process.env.NODE_ENV !== "development") {
+    response.headers.set(
+      "Content-Security-Policy",
+      `script-src 'nonce-${nonce}'`,
+    );
+  }
   return response;
 }
