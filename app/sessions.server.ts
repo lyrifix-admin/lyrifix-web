@@ -3,6 +3,7 @@ import type { User } from "./schemas/user";
 
 type SessionData = {
   token: string;
+  isAuthenticated: boolean;
   user: User;
 };
 

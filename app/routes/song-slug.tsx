@@ -5,6 +5,7 @@ import { $fetch } from "~/lib/fetch";
 import { parseHTML } from "~/lib/html";
 import type { paths } from "~/schema";
 import type { Route } from "./+types/song-slug";
+import { getSession } from "~/sessions.server";
 
 type SuccessResponse =
   paths["/songs/:slug"]["get"]["responses"][200]["content"]["application/json"];
@@ -19,18 +20,22 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-export async function loader({ params }: Route.LoaderArgs) {
+export async function loader({ request, params }: Route.LoaderArgs) {
   const { slug } = params;
+
+  const session = await getSession(request.headers.get("Cookie"));
+  const isAuthenticated = session.get("isAuthenticated");
 
   const { data: song, error } = await $fetch<SuccessResponse>("/songs/:slug", {
     params: { slug },
   });
   if (error) throw new Response("Song not found", { status: 404 });
-  return { song };
+
+  return { isAuthenticated, song };
 }
 
 export default function SongSlug({ loaderData }: Route.ComponentProps) {
-  const { song } = loaderData;
+  const { isAuthenticated, song } = loaderData;
 
   const selectedSongLyric =
     song.lyrics?.length && song.lyrics.length > 0
@@ -60,11 +65,13 @@ export default function SongSlug({ loaderData }: Route.ComponentProps) {
               Add Lyric
             </Link>
           </Button>
-          <Button asChild size="sm">
-            <Link to={href("/songs/:slug/edit", { slug: song.slug })}>
-              Edit
-            </Link>
-          </Button>
+          {isAuthenticated && (
+            <Button asChild size="sm">
+              <Link to={href("/songs/:slug/edit", { slug: song.slug })}>
+                Edit
+              </Link>
+            </Button>
+          )}
         </div>
       </section>
 

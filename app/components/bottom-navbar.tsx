@@ -3,8 +3,8 @@ import { NavLink, useLocation } from "react-router";
 import type { User } from "~/schemas/user";
 
 interface BottomNavbarProps {
-  isAuthenticated: boolean;
-  user: User | null;
+  isAuthenticated?: boolean;
+  user?: User;
 }
 
 export const BottomNavbar = ({ isAuthenticated, user }: BottomNavbarProps) => {

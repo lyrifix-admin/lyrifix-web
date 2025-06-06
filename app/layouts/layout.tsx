@@ -10,17 +10,17 @@ type SuccessResponse =
 
 export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get("Cookie"));
-  if (!session.has("token")) return { isAuthenticated: false, user: null };
+  const isAuthenticated = session.get("isAuthenticated");
+  if (!isAuthenticated) return { isAuthenticated };
 
   const token = session.get("token");
-
   const response = await fetch(`${process.env.BACKEND_API_URL}/auth/me`, {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
   });
-  if (!response.ok) return { isAuthenticated: false, user: null };
+  if (!response.ok) return { isAuthenticated: false };
 
   const user: SuccessResponse = await response.json();
 

@@ -31,11 +31,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   return data(
     { error: session.get("error") },
-    {
-      headers: {
-        "Set-Cookie": await commitSession(session),
-      },
-    },
+    { headers: { "Set-Cookie": await commitSession(session) } },
   );
 }
 
@@ -58,6 +54,7 @@ export async function action({ request }: Route.ClientActionArgs) {
   }
 
   session.set("token", data.token);
+  session.set("isAuthenticated", true);
 
   return redirect(href("/library"), {
     headers: { "Set-Cookie": await commitSession(session) },
