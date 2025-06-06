@@ -24,17 +24,20 @@ export function meta({}: Route.MetaArgs) {
 export async function action({ request }: Route.ClientActionArgs) {
   const formData = await request.formData();
   const submission = parseWithZod(formData, { schema: RegisterSchema });
+
+  console.log({ submission });
+
   if (submission.status !== "success") return submission.reply();
 
   const { data, error } = await $fetch("/auth/register", {
     method: "POST",
     body: submission.value,
   });
-  if (!data || error) {
-    return submission.reply({
-      fieldErrors: { email: ["Failed to register, try again."] },
-    });
-  }
+
+  console.log(JSON.stringify(error, null, 2));
+
+  if (!data || error) return submission.reply();
+
   return redirect("/login");
 }
 
