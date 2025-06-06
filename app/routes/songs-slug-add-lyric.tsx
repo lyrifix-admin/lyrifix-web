@@ -1,18 +1,14 @@
+import { getFormProps, useForm, useInputControl } from "@conform-to/react";
+import { parseWithZod } from "@conform-to/zod";
+import { Form, href, redirect } from "react-router";
+
+import MinimalTiptapEditor from "~/components/minimal-tiptap-editor";
+import { Button } from "~/components/ui/button";
 import { createAuthFetch } from "~/lib/fetch";
 import type { paths } from "~/schema";
+import { CreateLyricSchema } from "~/schemas/lyric";
 import { getSession } from "~/sessions.server";
 import type { Route } from "./+types/songs-slug-add-lyric";
-import { CreateLyricSchema } from "~/schemas/lyric";
-import { Form, href, redirect } from "react-router";
-import { parseWithZod } from "@conform-to/zod";
-import MinimalTiptapEditor from "~/components/minimal-tiptap-editor";
-import {
-  getFormProps,
-  getInputProps,
-  useForm,
-  useInputControl,
-} from "@conform-to/react";
-import { Button } from "~/components/ui/button";
 
 export function meta({}: Route.MetaArgs) {
   return [{ title: "Add Lyric to Song" }];
@@ -48,7 +44,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 
 export async function action({ request, params }: Route.ClientActionArgs) {
   const formData = await request.formData();
-  console.log("Form data received:", Object.fromEntries(formData.entries()));
+  // console.log("Form data received:", Object.fromEntries(formData.entries()));
 
   const submission = parseWithZod(formData, { schema: CreateLyricSchema });
 
@@ -72,13 +68,13 @@ export async function action({ request, params }: Route.ClientActionArgs) {
     });
   }
   const songId = songData.id;
-  console.log("Song ID:", songId);
+  // console.log("Song ID:", songId);
 
   const lyricPayload = {
     text: submission.value.text,
     songId,
   };
-  console.log("Lyric Payload:", lyricPayload);
+  // console.log("Lyric Payload:", lyricPayload);
 
   const { data: lyricData, error: lyricError } =
     await $fetch<ActionSuccessResponse>("/lyrics", {
@@ -107,49 +103,39 @@ export default function SongsSlugAddLyric({
     shouldValidate: "onBlur",
     shouldRevalidate: "onBlur",
     defaultValue: {
-      text: "",
+      text: "Type the lyric here...",
       songId: loaderData.songId,
       slug: loaderData.slug,
     },
   });
   const controlText = useInputControl(fields.text);
-  const controlSongId = useInputControl(fields.songId);
-  const controlSlug = useInputControl(fields.slug);
 
-  const handleSubmit = (event: React.FormEvent) => {
-    console.log("Form submitted");
-    console.log("Form values:", {
-      text: controlText.value,
-      songId: controlSongId.value,
-      slug: controlSlug.value,
-    });
-  };
   return (
     <div className="flex w-full items-center justify-center bg-zinc-950">
-      <div className="w-full max-w-lg p-8 shadow-lg">
-        <h1 className="mb-6 text-center text-3xl font-bold text-white">
+      <div className="w-full max-w-lg pt-8 shadow-lg">
+        <h1 className="mb-6 text-center text-xl font-bold text-white">
           Add Lyric
         </h1>
         <Form
           method="post"
           {...getFormProps(form)}
           className="flex flex-col gap-4"
-          onSubmit={handleSubmit}
         >
           <label
+            hidden
             htmlFor={fields.text.id}
             className="mb-1 block text-sm font-medium text-zinc-200"
           >
             Lyric Text
           </label>
-          <div className="p-2">
+          <div>
             <MinimalTiptapEditor
               id={fields.text.id}
               name={fields.text.name}
-              placeholder="Type your lyric here..."
-              value={controlText.value}
+              placeholder="Type the lyric here..."
+              content={controlText.value || "Type the lyric here..."}
               onChange={(val) => {
-                console.log("Editor value changed:", val);
+                // console.log("Editor value changed:", val);
                 controlText.change(val);
               }}
             />

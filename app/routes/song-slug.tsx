@@ -1,8 +1,10 @@
-import type { Route } from "./+types/song-slug";
 import { href, Link } from "react-router";
+
 import { Button } from "~/components/ui/button";
 import { $fetch } from "~/lib/fetch";
+import { parseHTML } from "~/lib/html";
 import type { paths } from "~/schema";
+import type { Route } from "./+types/song-slug";
 
 type SuccessResponse =
   paths["/songs/:slug"]["get"]["responses"][200]["content"]["application/json"];
@@ -30,6 +32,11 @@ export async function loader({ params }: Route.LoaderArgs) {
 export default function SongSlug({ loaderData }: Route.ComponentProps) {
   const { song } = loaderData;
 
+  const selectedSongLyric =
+    song.lyrics?.length && song.lyrics.length > 0
+      ? song.lyrics[0]?.text
+      : undefined;
+
   return (
     <div className="my-8">
       <section className="flex flex-col items-center justify-center gap-2">
@@ -46,18 +53,23 @@ export default function SongSlug({ loaderData }: Route.ComponentProps) {
             song.artists.length > 0 &&
             song.artists.map((artist) => artist.name).join(", ")}
         </p>
-        <Button asChild size="sm">
-          <Link to={href("/songs/:slug/add-lyric", { slug: song.slug })}>
-            Add Lyric
-          </Link>
-        </Button>
-        <Button asChild size="sm">
-          <Link to={href("/songs/:slug/edit", { slug: song.slug })}>Edit</Link>
-        </Button>
+
+        <div className="flex gap-2">
+          <Button asChild size="sm">
+            <Link to={href("/songs/:slug/add-lyric", { slug: song.slug })}>
+              Add Lyric
+            </Link>
+          </Button>
+          <Button asChild size="sm">
+            <Link to={href("/songs/:slug/edit", { slug: song.slug })}>
+              Edit
+            </Link>
+          </Button>
+        </div>
       </section>
 
       <p className="mt-4 text-left text-lg whitespace-pre-line text-white">
-        {song.lyrics && song.lyrics.length > 0 && song.lyrics[0]?.text}
+        {parseHTML(selectedSongLyric)}
       </p>
     </div>
   );

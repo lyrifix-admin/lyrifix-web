@@ -11,7 +11,7 @@ import {
 } from "@conform-to/react";
 import { useState } from "react";
 import type { Option } from "~/components/ui/multiselect";
-import { Form, href, redirect } from "react-router";
+import { Form, href, redirect, useNavigation } from "react-router";
 import { SingleFileUploader } from "~/components/single-uploadcare";
 import { Input } from "~/components/ui/input";
 import { MultiselectArtists } from "~/components/multiselect-artists";
@@ -96,6 +96,8 @@ export default function SongSlugEdit({
   actionData,
 }: Route.ComponentProps) {
   const { song, artists, uploadcarePublicKey } = loaderData;
+  const navigation = useNavigation();
+  const isSubmitting = navigation.state === "submitting";
 
   const [form, fields] = useForm({
     onValidate({ formData }) {
@@ -179,7 +181,9 @@ export default function SongSlugEdit({
         </div>
 
         <div className="mt-14">
-          <Button className="w-full">Save</Button>
+          <Button className="w-full" disabled={isSubmitting}>
+            {isSubmitting ? "Saving..." : "Save"}
+          </Button>
         </div>
       </Form>
     </div>

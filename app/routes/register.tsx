@@ -1,5 +1,5 @@
 import type { Route } from "./+types/register";
-import { Form, redirect } from "react-router";
+import { Form, redirect, useNavigation } from "react-router";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Card, CardHeader, CardTitle, CardContent } from "~/components/ui/card";
@@ -42,6 +42,9 @@ export async function action({ request }: Route.ClientActionArgs) {
 }
 
 export default function RegisterRoute({ actionData }: Route.ComponentProps) {
+  const navigation = useNavigation();
+  const isSubmitting = navigation.state === "submitting";
+
   const [form, fields] = useForm({
     lastResult: actionData,
     onValidate({ formData }) {
@@ -120,7 +123,9 @@ export default function RegisterRoute({ actionData }: Route.ComponentProps) {
               </li>
             ))}
 
-            <Button className="flex-1">Register</Button>
+            <Button className="flex-1" disabled={isSubmitting}>
+              {isSubmitting ? "Registering..." : "Register"}
+            </Button>
           </Form>
         </CardContent>
       </Card>

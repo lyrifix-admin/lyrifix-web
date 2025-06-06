@@ -1,4 +1,4 @@
-import { data, Form, href, redirect } from "react-router";
+import { data, Form, href, redirect, useNavigation } from "react-router";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
@@ -65,6 +65,9 @@ export async function action({ request }: Route.ClientActionArgs) {
 }
 
 export default function LoginRoute({ actionData }: Route.ComponentProps) {
+  const navigation = useNavigation();
+  const isSubmitting = navigation.state === "submitting";
+
   const [form, fields] = useForm({
     lastResult: actionData,
     onValidate({ formData }) {
@@ -123,7 +126,9 @@ export default function LoginRoute({ actionData }: Route.ComponentProps) {
               </li>
             ))}
 
-            <Button className="flex-1">Login</Button>
+            <Button className="flex-1" disabled={isSubmitting}>
+              {isSubmitting ? "Logging in..." : "Login"}
+            </Button>
           </Form>
         </CardContent>
       </Card>

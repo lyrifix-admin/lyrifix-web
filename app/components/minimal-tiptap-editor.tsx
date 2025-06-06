@@ -1,13 +1,14 @@
-"use client";
-import React, { useEffect } from "react";
-import { useEditor, EditorContent } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
+import { EditorContent, useEditor, type Content } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
 import { Bold, Italic, Strikethrough } from "lucide-react";
+import { useEffect } from "react";
+
 import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
+import { cn } from "~/lib/utils";
 
 interface MinimalTiptapEditorProps {
-  value?: string;
+  content: Content | Node;
   onChange?: (value: string) => void;
   name: string;
   className?: string;
@@ -19,25 +20,25 @@ interface MinimalTiptapEditorProps {
 }
 
 export default function MinimalTiptapEditor({
-  value = "",
+  content,
   onChange,
   autofocus = false,
   editable = true,
   name,
-  placeholder = "Type here...",
   className = "",
   editorContentClassName = "",
   id,
-  ...props
 }: MinimalTiptapEditorProps) {
   const editor = useEditor({
+    content,
     extensions: [
       StarterKit,
       Placeholder.configure({
-        placeholder,
+        placeholder: () => {
+          return "The the lyric here...";
+        },
       }),
     ],
-    content: value,
     editable,
     autofocus,
     onUpdate({ editor }) {
@@ -47,12 +48,10 @@ export default function MinimalTiptapEditor({
   });
 
   useEffect(() => {
-    if (editor && value !== editor.getHTML()) {
-      editor.commands.setContent(value);
+    if (editor && content !== editor.getHTML()) {
+      editor.commands.setContent(content);
     }
-  }, [value, editor]);
-
-  const html = editor?.getHTML() ?? value;
+  }, [content, editor]);
 
   return (
     <div
@@ -81,10 +80,13 @@ export default function MinimalTiptapEditor({
           <Strikethrough className="h-4 w-4" />
         </ToggleGroupItem>
       </ToggleGroup>
-      <div className="max-h-[300px] overflow-y-auto">
+      <div className="overflow-y-auto">
         <EditorContent
           editor={editor}
-          className={`min-h-[150px] bg-transparent p-4 focus:outline-none ${editorContentClassName}`}
+          className={cn(
+            "min-h-[150px] bg-transparent p-4 focus:outline-none",
+            editorContentClassName,
+          )}
         />
       </div>
       <input
