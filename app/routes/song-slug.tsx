@@ -4,20 +4,16 @@ import { Button } from "~/components/ui/button";
 import { $fetch } from "~/lib/fetch";
 import { parseHTML } from "~/lib/html";
 import type { paths } from "~/schema";
-import type { Route } from "./+types/song-slug";
 import { getSession } from "~/sessions.server";
+import type { Route } from "./+types/song-slug";
 
 type SuccessResponse =
   paths["/songs/:slug"]["get"]["responses"][200]["content"]["application/json"];
 
-export function meta({}: Route.MetaArgs) {
-  return [
-    { title: "Lyrifix - Lyric" },
-    {
-      name: "description",
-      content: "Lyric page of Lyrifix",
-    },
-  ];
+export function meta({ data }: Route.MetaArgs) {
+  const song = data?.song;
+  if (!song) return [{ title: `Song not found - Lyrifix` }];
+  return [{ title: `${song.title} - Lyrifix` }];
 }
 
 export async function loader({ request, params }: Route.LoaderArgs) {
@@ -25,17 +21,18 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 
   const session = await getSession(request.headers.get("Cookie"));
   const isAuthenticated = session.get("isAuthenticated");
+  const user = session.get("user");
 
   const { data: song, error } = await $fetch<SuccessResponse>("/songs/:slug", {
     params: { slug },
   });
   if (error) throw new Response("Song not found", { status: 404 });
 
-  return { isAuthenticated, song };
+  return { isAuthenticated, user, song };
 }
 
 export default function SongSlug({ loaderData }: Route.ComponentProps) {
-  const { isAuthenticated, song } = loaderData;
+  const { isAuthenticated, user, song } = loaderData;
 
   const selectedSongLyric =
     song.lyrics?.length && song.lyrics.length > 0
@@ -75,9 +72,30 @@ export default function SongSlug({ loaderData }: Route.ComponentProps) {
         </div>
       </section>
 
-      <p className="mt-4 text-left text-lg whitespace-pre-line text-white">
-        {parseHTML(selectedSongLyric)}
-      </p>
+      {/* TODO */}
+      <p>TABS</p>
+      <ul>
+        {song.lyrics?.map((lyric) => {
+          const isOwner = lyric.userId === user?.id;
+
+          return (
+            <li key={lyric.id}>
+              {isAuthenticated && isOwner && (
+                <Button asChild size="xs">
+                  {/*  /songs/:songSlug/lyrics/:lyricId/edit */}
+                  {/* <Link to={href("/songs/:slug/edit", { slug: song.slug })}> */}
+                  Edit Lyric
+                  {/* </Link> */}
+                </Button>
+              )}
+
+              <div className="prose mt-4 text-left text-lg whitespace-pre-line text-white">
+                {parseHTML(selectedSongLyric)}
+              </div>
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 }
