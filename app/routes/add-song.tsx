@@ -51,18 +51,25 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 export async function action({ request }: Route.ClientActionArgs) {
   const formData = await request.formData();
+  // console.log("FormData:", Object.fromEntries(formData.entries()));
+
   const submission = parseWithZod(formData, { schema: CreateSongSchema });
+  // console.log("Submission:", submission);
   if (submission.status !== "success") return submission.reply();
 
   const session = await getSession(request.headers.get("Cookie"));
   const token = session.get("token");
-  if (!token) return redirect("/login");
+  const user = session.get("user");
+  const userId = user?.id;
+  if (!token || !userId) return redirect("/login");
 
   const $fetch = createAuthFetch(token);
+  const payload = { ...submission.value, userId };
+  // console.log("Payload to API:", payload);
 
   const { data: song, error } = await $fetch<ActionSuccessResponse>("/songs", {
     method: "POST",
-    body: submission.value,
+    body: payload,
   });
 
   if (!song || error) {

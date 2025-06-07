@@ -10,8 +10,9 @@ import { LoginSchema } from "~/schemas/auth";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { commitSession, getSession } from "~/sessions.server";
-import { $fetch } from "~/lib/fetch";
+import { $fetch, createAuthFetch } from "~/lib/fetch";
 import type { paths } from "~/schema";
+import type { User } from "~/schemas/user";
 
 type SuccessResponse =
   paths["/auth/login"]["post"]["responses"][200]["content"]["application/json"];
@@ -55,6 +56,17 @@ export async function action({ request }: Route.ClientActionArgs) {
 
   session.set("token", data.token);
   session.set("isAuthenticated", true);
+
+  const $authFetch = createAuthFetch(data.token);
+  const { data: userProfile, error: userError } =
+    await $authFetch<User>("/auth/me");
+  if (!userProfile || userError) {
+    return submission.reply({
+      fieldErrors: { email: ["Failed to fetch user profile."] },
+    });
+  }
+  session.set("user", userProfile);
+  console.log(data);
 
   return redirect(href("/library"), {
     headers: { "Set-Cookie": await commitSession(session) },
