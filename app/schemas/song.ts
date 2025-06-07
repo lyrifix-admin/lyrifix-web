@@ -19,6 +19,7 @@ export const CreateSongSchema = z.object({
   imageUrl: z.string().min(1),
   title: z.string().min(1),
   artistIds: z.array(z.string().min(1)),
+  userId: z.string().ulid().optional(),
 });
 
 export const UpdateSongSchema = z.object({
