@@ -70,15 +70,18 @@ export async function action({ request }: Route.ClientActionArgs) {
 
   const session = await getSession(request.headers.get("Cookie"));
   const token = session.get("token");
-  if (!token) return redirect("/login");
+  const user = session.get("user");
+  const userId = user?.id;
+  if (!token || !userId) return redirect("/login");
 
   const $fetch = createAuthFetch(token);
+  const payload = { ...body, userId };
 
   const { data, error } = await $fetch<ActionSuccessResponse>(
     `/songs/${submission.value.id}`,
     {
       method: "PATCH",
-      body: body,
+      body: payload,
     },
   );
 
