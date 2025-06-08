@@ -1,4 +1,4 @@
-import { HomeIcon, UserIcon, CircleGaugeIcon } from "lucide-react";
+import { HomeIcon, UserIcon, CircleGaugeIcon, PaletteIcon } from "lucide-react";
 import { NavLink, useLocation } from "react-router";
 import type { User } from "~/schemas/user";
 
@@ -24,15 +24,15 @@ export const BottomNavbar = ({ isAuthenticated, user }: BottomNavbarProps) => {
           <span className="text-sm">Home</span>
         </NavLink>
 
-        {/* <Link
-          to="/artist"
+        <NavLink
+          to="/artists"
           className={`flex flex-col items-center ${
-            location.pathname === "/artist" ? "text-fuchsia-400" : ""
+            location.pathname === "/artists" ? "text-fuchsia-400" : ""
           }`}
         >
           <PaletteIcon className="mb-1 h-6 w-6" />
           <span className="text-sm">Artists</span>
-        </Link> */}
+        </NavLink>
 
         {isAuthenticated && user && (
           <NavLink

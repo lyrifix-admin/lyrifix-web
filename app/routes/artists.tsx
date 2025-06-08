@@ -1,4 +1,9 @@
 import type { Route } from "./+types/artists";
+import { Link } from "react-router";
+import { $fetch } from "~/lib/fetch";
+import type { paths } from "~/schema";
+import { PaletteIcon } from "lucide-react";
+import { Card, CardContent, CardTitle } from "~/components/ui/card";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -9,11 +14,71 @@ export function meta({}: Route.MetaArgs) {
     },
   ];
 }
+type ArtistsSuccessResponse =
+  paths["/artists"]["get"]["responses"][200]["content"]["application/json"];
 
-export default function ArtistRoute() {
+export async function loader({}: Route.LoaderArgs) {
+  const { data: artists } = await $fetch<ArtistsSuccessResponse>("/artists");
+  return { artists };
+}
+
+export default function ArtistRoute({ loaderData }: Route.ComponentProps) {
+  const { artists } = loaderData;
+
+  if (!artists) return null;
+
   return (
-    <div className="p-6 text-white">
-      <h1 className="text-2xl font-bold">Artists</h1>
+    <div className="space-y-6 text-white">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Artists</h1>
+        </div>
+      </div>
+
+      {artists.length === 0 ? (
+        <div className="py-12 text-center">
+          <PaletteIcon className="mx-auto mb-4 h-16 w-16 text-gray-400" />
+          <h3 className="mb-2 text-xl font-semibold text-gray-300">
+            Artist is empty
+          </h3>
+        </div>
+      ) : (
+        <ul className="grid grid-cols-1 items-stretch gap-4 md:grid-cols-2 lg:grid-cols-2">
+          {artists.map((artists) => (
+            <li
+              key={artists.id}
+              className="flex h-full flex-col transition-all duration-200 hover:scale-105"
+            >
+              <Link
+                to={`/songs/${artists.slug}`}
+                className="flex h-full flex-1 flex-col"
+              >
+                <Card
+                  key={artists.id}
+                  className={
+                    "bg-card flex h-full flex-1 flex-col items-center rounded-3xl border-2 border-fuchsia-500 p-4 text-center break-words text-white shadow-lg"
+                  }
+                >
+                  <img
+                    src={
+                      artists.imageUrl ||
+                      "https://placehold.co/500x500/EEE/31343C"
+                    }
+                    alt={artists.name}
+                    className="aspect-square h-40 w-40 rounded-full bg-zinc-800 object-cover"
+                  />
+
+                  <CardContent>
+                    <CardTitle className="w-full max-w-xs text-center break-words">
+                      {artists.name}
+                    </CardTitle>
+                  </CardContent>
+                </Card>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

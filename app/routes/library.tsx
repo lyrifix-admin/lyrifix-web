@@ -41,7 +41,6 @@ export default function LibraryRoute({ loaderData }: Route.ComponentProps) {
 
   return (
     <div className="space-y-6 text-white">
-      {/* Header Section */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-3xl font-bold">Your Library</h1>
@@ -66,7 +65,7 @@ export default function LibraryRoute({ loaderData }: Route.ComponentProps) {
             Start building your collection by adding your first song
           </p>
           <Link to="/add-song">
-            <Button className="bg-pink-600 hover:bg-pink-700">
+            <Button className="hover:bg-fuchsia-500">
               <PlusIcon className="mr-2 h-4 w-4" />
               Add Your First Song
             </Button>
@@ -77,10 +76,10 @@ export default function LibraryRoute({ loaderData }: Route.ComponentProps) {
           {/* Add Song Card */}
           <li className="flex h-full flex-col">
             <Link to="/add-song" className="flex h-full flex-1 flex-col">
-              <div className="group flex h-full flex-col rounded-lg border-2 border-dashed border-pink-500/50 bg-gray-800/50 p-6 transition-all duration-200 hover:scale-105 hover:border-pink-500 hover:bg-gray-800">
+              <div className="group flex h-full flex-col rounded-lg border-2 border-dashed border-fuchsia-500/50 bg-gray-800/50 p-6 transition-all duration-200 hover:scale-105 hover:border-fuchsia-500 hover:bg-gray-800">
                 <div className="flex flex-1 flex-col items-center justify-center">
-                  <PlusIcon className="h-8 w-8 text-pink-400 transition-colors group-hover:text-pink-300" />
-                  <span className="mt-2 text-sm font-medium text-pink-400 group-hover:text-pink-300">
+                  <PlusIcon className="h-8 w-8 text-fuchsia-400 transition-colors group-hover:text-fuchsia-300" />
+                  <span className="text-fuchisa-400 mt-2 text-sm font-medium group-hover:text-fuchsia-300">
                     Add New Song
                   </span>
                 </div>
