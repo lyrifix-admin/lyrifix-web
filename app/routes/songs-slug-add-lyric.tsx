@@ -52,7 +52,10 @@ export async function action({ request, params }: Route.ClientActionArgs) {
 
   const session = await getSession(request.headers.get("Cookie"));
   const token = session.get("token");
-  if (!token) return redirect("/login");
+  const user = session.get("user");
+  const userId = user?.id;
+
+  if (!token || !userId) return redirect("/login");
 
   const slug = params.slug;
   const $fetch = createAuthFetch(token);
