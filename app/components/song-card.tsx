@@ -20,7 +20,7 @@ export function SongCard({ song }: { song: Song; className?: string }) {
       <img
         src={song.imageUrl || "https://placehold.co/500x500/EEE/31343C"}
         alt={song.title}
-        className="aspect-square rounded-2xl object-cover"
+        className="aspect-square h-40 w-40 rounded-2xl object-cover"
       />
 
       <CardContent>
