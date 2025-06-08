@@ -76,6 +76,7 @@ export default function RegisterRoute({ actionData }: Route.ComponentProps) {
                 name={fields.fullName.name}
                 id="fullName"
                 placeholder="John Doe"
+                defaultValue={fields.fullName.initialValue}
               />
               <p className="text-sm text-red-500">{fields.fullName.errors}</p>
             </div>
@@ -86,6 +87,7 @@ export default function RegisterRoute({ actionData }: Route.ComponentProps) {
                 name={fields.username.name}
                 id="username"
                 placeholder="john"
+                defaultValue={fields.username.initialValue}
               />
               <p className="text-sm text-red-500">{fields.username.errors}</p>
             </div>
@@ -96,6 +98,7 @@ export default function RegisterRoute({ actionData }: Route.ComponentProps) {
                 name={fields.email.name}
                 id="email"
                 placeholder="user@example.com"
+                defaultValue={fields.email.initialValue}
               />
               <p className="text-sm text-red-500">{fields.email.errors}</p>
             </div>
@@ -108,6 +111,7 @@ export default function RegisterRoute({ actionData }: Route.ComponentProps) {
                 id="password"
                 type={showPassword ? "text" : "password"}
                 className="pr-10"
+                defaultValue={fields.password.initialValue}
               />
               <button
                 type="button"
