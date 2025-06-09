@@ -18,6 +18,7 @@ export default [
     route("library", "routes/library.tsx"),
 
     route("add-song", "routes/add-song.tsx"),
+    route("add-artist", "routes/add-artist.tsx"),
     route("songs/:slug/edit", "routes/songs-slug-edit.tsx"),
     route("songs/:slug/add-lyric", "routes/songs-slug-add-lyric.tsx"),
 

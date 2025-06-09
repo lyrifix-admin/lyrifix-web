@@ -27,7 +27,10 @@ export const BottomNavbar = ({ isAuthenticated, user }: BottomNavbarProps) => {
         <NavLink
           to="/artists"
           className={`flex flex-col items-center ${
-            location.pathname === "/artists" ? "text-fuchsia-400" : ""
+            location.pathname.startsWith("/artists") ||
+            location.pathname === "/add-artist"
+              ? "text-fuchsia-400"
+              : ""
           }`}
         >
           <PaletteIcon className="mb-1 h-6 w-6" />
