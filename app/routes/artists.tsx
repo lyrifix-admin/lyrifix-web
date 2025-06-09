@@ -60,10 +60,7 @@ export default function ArtistRoute({ loaderData }: Route.ComponentProps) {
             key={artists.id}
             className="flex h-full flex-col transition-all duration-200 hover:scale-105"
           >
-            <Link
-              to={`/songs/${artists.slug}`}
-              className="flex h-full flex-1 flex-col"
-            >
+            <Link to={`/artists`} className="flex h-full flex-1 flex-col">
               <Card
                 key={artists.id}
                 className={
