@@ -10,7 +10,7 @@ import { Debug } from "~/components/ui/debug";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "~/components/ui/tabs";
 
 type SuccessResponse =
-  paths["/songs/:slug"]["get"]["responses"][200]["content"]["application/json"];
+  paths["/songs/{slug}"]["get"]["responses"][200]["content"]["application/json"];
 
 export function meta({ data }: Route.MetaArgs) {
   const song = data?.song;
@@ -52,7 +52,7 @@ export default function SongSlug({ loaderData }: Route.ComponentProps) {
   }
 
   return (
-    <div className="my-8">
+    <div className="my-8 overflow-x-hidden">
       <section className="flex flex-col items-center justify-center gap-2">
         <img
           src={song.imageUrl || "https://placehold.co/500x500/EEE/31343C"}
@@ -89,7 +89,7 @@ export default function SongSlug({ loaderData }: Route.ComponentProps) {
         defaultValue={Object.keys(lyricsByUser ?? {})[0] ?? ""}
         className="mt-4 w-full"
       >
-        <TabsList className="flex overflow-x-auto">
+        <TabsList className="scrollbar-thin flex max-w-full overflow-x-auto whitespace-nowrap">
           {Object.entries(lyricsByUser).map(([userId], index) => (
             <TabsTrigger key={userId} value={userId}>
               {userId === "_unknown"
@@ -125,7 +125,7 @@ export default function SongSlug({ loaderData }: Route.ComponentProps) {
           </TabsContent>
         ))}
       </Tabs>
-      <Debug>{song}</Debug>
+      {/* <Debug>{song}</Debug> */}
     </div>
   );
 }
