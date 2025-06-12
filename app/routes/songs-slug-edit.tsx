@@ -19,11 +19,11 @@ import { Button } from "~/components/ui/button";
 import { getSession } from "~/sessions.server";
 
 type SongSuccessResponse =
-  paths["/songs/:slug"]["get"]["responses"][200]["content"]["application/json"];
+  paths["/songs/{slug}"]["get"]["responses"][200]["content"]["application/json"];
 type ArtistsSuccessResponse =
   paths["/artists"]["get"]["responses"][200]["content"]["application/json"];
 type ActionSuccessResponse = {
-  song: paths["/songs/:id"]["patch"]["responses"][200]["content"]["application/json"];
+  song: paths["/songs/{id}"]["patch"]["responses"][200]["content"]["application/json"];
 };
 
 export function meta({}: Route.MetaArgs) {

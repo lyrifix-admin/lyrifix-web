@@ -15,7 +15,7 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export type LoaderSuccessResponse =
-  paths["/songs/:slug"]["get"]["responses"][200]["content"]["application/json"];
+  paths["/songs/{slug}"]["get"]["responses"][200]["content"]["application/json"];
 
 export type ActionSuccessResponse =
   paths["/lyrics"]["post"]["responses"][200]["content"]["application/json"];
