@@ -14,4 +14,10 @@ export const CreateArtistSchema = ArtistSchema.pick({
   imageUrl: true,
 });
 
+export const UpdateArtistSchema = ArtistSchema.pick({
+  id: true,
+  name: true,
+  imageUrl: true,
+});
+
 export type Artist = z.infer<typeof ArtistSchema>;
