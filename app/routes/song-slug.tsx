@@ -107,7 +107,7 @@ export default function SongSlug({ loaderData }: Route.ComponentProps) {
                   {isAuthenticated && isOwner && (
                     <Button asChild size="sm" className="mb-2">
                       <Link
-                        to={href("/songs/:slug", {
+                        to={href("/lyrics/:slug/edit", {
                           slug: song.slug,
                         })}
                       >
