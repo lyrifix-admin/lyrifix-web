@@ -1,7 +1,7 @@
 import type { paths } from "~/schema";
 import type { Route } from "./+types/songs-slug-edit-lyric";
 import { createAuthFetch } from "~/lib/fetch";
-import { Form, href, redirect, useNavigation } from "react-router";
+import { Form, href, Link, redirect, useNavigation } from "react-router";
 import { getFormProps, useForm, useInputControl } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { UpdateLyricSchema } from "~/schemas/lyric";
@@ -169,6 +169,11 @@ export default function LyricsSlugEditRoute({
           <div>
             <Button className="w-full" disabled={isSubmitting}>
               {isSubmitting ? "Saving Lyric..." : "Save Lyric"}
+            </Button>
+          </div>
+          <div>
+            <Button className="w-full" variant="outline" asChild>
+              <Link to={`/songs/${loaderData.slug}`}>Cancel</Link>
             </Button>
           </div>
         </Form>
