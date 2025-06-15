@@ -1,14 +1,15 @@
-import type { paths } from "~/schema";
-import type { Route } from "./+types/songs-slug-edit-lyric";
-import { createAuthFetch } from "~/lib/fetch";
-import { Form, Link, redirect, useNavigation } from "react-router";
 import { getFormProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
-import { UpdateLyricSchema } from "~/schemas/lyric";
-import { Button } from "~/components/ui/button";
-import { getSession } from "~/sessions.server";
-import MinimalTiptapEditor from "~/components/minimal-tiptap-editor";
 import { useState } from "react";
+import { Form, Link, redirect, useNavigation } from "react-router";
+
+import MinimalTiptapEditor from "~/components/minimal-tiptap-editor";
+import { Button } from "~/components/ui/button";
+import { createAuthFetch } from "~/lib/fetch";
+import type { paths } from "~/schema";
+import { UpdateLyricSchema } from "~/schemas/lyric";
+import { getSession } from "~/sessions.server";
+import type { Route } from "./+types/songs-slug-edit-lyric";
 
 type SongWithLyricsResponse =
   paths["/songs/{slug}"]["get"]["responses"][200]["content"]["application/json"];
@@ -34,8 +35,6 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   const $fetch = createAuthFetch(token);
   const { slug, id } = params;
 
-  // console.log("Loader params:", { slug, id });
-
   try {
     const { data: songData } = await $fetch<SongWithLyricsResponse>(
       `/songs/${slug}`,
@@ -44,15 +43,11 @@ export async function loader({ request, params }: Route.LoaderArgs) {
       },
     );
 
-    // console.log("Song data:", songData);
-    // console.log("Song lyrics:", songData?.lyrics);
-
     if (!songData?.lyrics || songData.lyrics.length === 0) {
       throw new Response("No lyrics found for this song", { status: 404 });
     }
 
     const targetLyric = songData.lyrics.find((lyric) => lyric.id === id);
-    // console.log("Target lyric found:", targetLyric);
 
     if (!targetLyric) {
       throw new Response("Lyric not found", { status: 404 });
@@ -83,7 +78,7 @@ export async function action({ request, params }: Route.ClientActionArgs) {
   const $fetch = createAuthFetch(token);
   const payload = { ...submission.value, userId };
 
-  const { data, error } = await $fetch<ActionSuccessResponse>(
+  const { data: lyric, error } = await $fetch<ActionSuccessResponse>(
     `/lyrics/${submission.value.id}`,
     {
       method: "PATCH",
@@ -91,13 +86,13 @@ export async function action({ request, params }: Route.ClientActionArgs) {
     },
   );
 
-  if (!data || error) {
+  if (!lyric || error) {
     return submission.reply({
       fieldErrors: { name: ["Failed to update lyric."] },
     });
   }
-  const { slug } = params;
-  return redirect(`/songs/${slug}`);
+
+  return redirect(`/songs/${params.slug}?lyric=${lyric.user?.username}`);
 }
 
 export default function LyricsSlugEditRoute({

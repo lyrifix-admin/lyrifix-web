@@ -67,14 +67,12 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   };
 }
 
-export async function action({ request, params }: Route.ClientActionArgs) {
+export async function action({ request }: Route.ClientActionArgs) {
   const formData = await request.formData();
   const submission = parseWithZod(formData, { schema: UpdateSongSchema });
 
   if (submission.status !== "success") return submission.reply();
 
-  // TODO: update artists
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { artistIds, ...body } = submission.value;
 
   const session = await getSession(request.headers.get("Cookie"));
