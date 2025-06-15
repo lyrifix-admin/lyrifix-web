@@ -22,9 +22,8 @@ type SongSuccessResponse =
   paths["/songs/{slug}"]["get"]["responses"][200]["content"]["application/json"];
 type ArtistsSuccessResponse =
   paths["/artists"]["get"]["responses"][200]["content"]["application/json"];
-type ActionSuccessResponse = {
-  song: paths["/songs/{id}"]["patch"]["responses"][200]["content"]["application/json"];
-};
+type ActionSuccessResponse =
+  paths["/songs/{id}"]["patch"]["responses"][200]["content"]["application/json"];
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -58,7 +57,7 @@ export async function loader({ params }: Route.LoaderArgs) {
   };
 }
 
-export async function action({ request }: Route.ClientActionArgs) {
+export async function action({ request, params }: Route.ClientActionArgs) {
   const formData = await request.formData();
   const submission = parseWithZod(formData, { schema: UpdateSongSchema });
 
@@ -75,7 +74,7 @@ export async function action({ request }: Route.ClientActionArgs) {
   if (!token || !userId) return redirect("/login");
 
   const $fetch = createAuthFetch(token);
-  const payload = { ...body, userId };
+  const payload = { ...body, artistIds };
 
   const { data, error } = await $fetch<ActionSuccessResponse>(
     `/songs/${submission.value.id}`,
@@ -90,8 +89,7 @@ export async function action({ request }: Route.ClientActionArgs) {
       fieldErrors: { title: ["Failed to update song."] },
     });
   }
-
-  return redirect(href("/songs/:slug", { slug: data.song.slug }));
+  return redirect(href("/"));
 }
 
 export default function SongSlugEdit({
