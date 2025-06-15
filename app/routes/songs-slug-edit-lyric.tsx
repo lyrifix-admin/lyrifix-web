@@ -35,31 +35,43 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   if (!token) return redirect("/login");
 
   const $fetch = createAuthFetch(token);
-  const { slug } = params;
+  const { slug, id } = params;
 
-  const { data: songData } = await $fetch<SongWithLyricsResponse>(
-    `/songs/${slug}`,
-    {
-      params: { slug },
-    },
-  );
+  console.log("Loader params:", { slug, id });
 
-  const lyricSlug = songData?.lyrics?.[0]?.slug;
+  try {
+    const { data: songData } = await $fetch<SongWithLyricsResponse>(
+      `/songs/${slug}`,
+      {
+        params: { slug },
+      },
+    );
 
-  if (!lyricSlug) {
+    // console.log("Song data:", songData);
+    // console.log("Song lyrics:", songData?.lyrics);
+
+    if (!songData?.lyrics || songData.lyrics.length === 0) {
+      throw new Response("No lyrics found for this song", { status: 404 });
+    }
+
+    const targetLyric = songData.lyrics.find((lyric) => lyric.id === id);
+    console.log("Target lyric found:", targetLyric);
+
+    if (!targetLyric) {
+      throw new Response("Lyric not found", { status: 404 });
+    }
+
+    return {
+      lyric: targetLyric,
+      slug,
+    };
+  } catch (error) {
+    console.error("Loader error:", error);
     throw new Response("Lyric not found", { status: 404 });
   }
-
-  const lyric = await $fetch<LyricsSuccessResponse>(`/lyrics/${lyricSlug}`);
-
-  if (lyric.error) throw new Response("Lyric not found", { status: 404 });
-
-  return {
-    lyric: lyric.data,
-  };
 }
 
-export async function action({ request }: Route.ClientActionArgs) {
+export async function action({ request, params }: Route.ClientActionArgs) {
   const formData = await request.formData();
   const submission = parseWithZod(formData, { schema: UpdateLyricSchema });
 
@@ -87,8 +99,8 @@ export async function action({ request }: Route.ClientActionArgs) {
       fieldErrors: { name: ["Failed to update lyric."] },
     });
   }
-
-  return redirect("/");
+  const { slug } = params;
+  return redirect(`/songs/${slug}`);
 }
 
 export default function LyricsSlugEditRoute({
@@ -99,10 +111,6 @@ export default function LyricsSlugEditRoute({
     (loaderData.lyric as { lyric?: any })?.lyric || loaderData.lyric;
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
-
-  console.log("Full loaderData:", loaderData);
-  console.log("lyricData:", lyricData);
-  console.log("lyricData.text:", lyricData?.text);
 
   const [form, fields] = useForm({
     onValidate({ formData }) {
@@ -126,7 +134,7 @@ export default function LyricsSlugEditRoute({
           Edit Lyric
         </h1>
         <Form
-          method="post"
+          method="patch"
           {...getFormProps(form)}
           className="flex flex-col gap-4"
         >
@@ -164,8 +172,6 @@ export default function LyricsSlugEditRoute({
             </Button>
           </div>
         </Form>
-
-        <Debug>{lyricData}</Debug>
       </div>
     </div>
   );
