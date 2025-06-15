@@ -50,6 +50,7 @@ export default function SongSlug({ loaderData }: Route.ComponentProps) {
     }
     lyricsByUser[key].push(lyric);
   }
+  const isOwner = song.userId === user?.id;
 
   return (
     <div className="my-8 overflow-x-hidden">
@@ -74,7 +75,7 @@ export default function SongSlug({ loaderData }: Route.ComponentProps) {
               Add Lyric
             </Link>
           </Button>
-          {isAuthenticated && (
+          {isAuthenticated && isOwner && (
             <Button asChild size="sm">
               <Link to={href("/songs/:slug/edit", { slug: song.slug })}>
                 Edit
