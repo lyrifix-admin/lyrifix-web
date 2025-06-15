@@ -16,7 +16,13 @@ export const BottomNavbar = ({ isAuthenticated, user }: BottomNavbarProps) => {
 
   return (
     <nav className="fixed right-0 bottom-0 left-0 z-50 border-t border-gray-700 bg-black text-white">
-      <div className="grid grid-cols-4 gap-4">
+      <div
+        className={cn(
+          "grid gap-4",
+          isAuthenticated && "grid-cols-4",
+          !isAuthenticated && "grid-cols-3",
+        )}
+      >
         {navLinks.map((navLink) => {
           return (
             <NavLink
@@ -61,7 +67,7 @@ export const BottomNavbar = ({ isAuthenticated, user }: BottomNavbarProps) => {
             }
           >
             <UserIcon className="mb-1 h-6 w-6" />
-            <span className="text-sm">Logout</span>
+            <span className="text-sm">{user.username}</span>
           </NavLink>
         )}
 

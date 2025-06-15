@@ -93,7 +93,7 @@ export default function SongSlug({ loaderData }: Route.ComponentProps) {
             </Button>
           )}
 
-          {!isAlreadyAddedLyric && (
+          {isAuthenticated && !isAlreadyAddedLyric && (
             <Button asChild size="sm">
               <Link to={href("/songs/:slug/add-lyric", { slug: song.slug })}>
                 Add Lyric
