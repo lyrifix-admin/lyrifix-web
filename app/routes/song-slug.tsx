@@ -1,4 +1,4 @@
-import { href, Link } from "react-router";
+import { href, Link, useNavigate } from "react-router";
 
 import { Button } from "~/components/ui/button";
 import { $fetch } from "~/lib/fetch";
@@ -29,11 +29,16 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   });
   if (error) throw new Response("Song not found", { status: 404 });
 
-  return { isAuthenticated, user, song };
+  const url = new URL(request.url);
+  const lyricSearchParam = url.searchParams.get("lyric");
+
+  return { isAuthenticated, user, song, lyricSearchParam };
 }
 
 export default function SongSlug({ loaderData }: Route.ComponentProps) {
-  const { isAuthenticated, user, song } = loaderData;
+  const navigate = useNavigate();
+
+  const { isAuthenticated, user, song, lyricSearchParam } = loaderData;
 
   const lyricsByUser: Record<string, typeof song.lyrics> = {};
 
@@ -46,6 +51,16 @@ export default function SongSlug({ loaderData }: Route.ComponentProps) {
   }
 
   const isSongOwner = song.userId === user?.id;
+
+  const firstUsername = Array.isArray(song.lyrics)
+    ? song.lyrics[0]?.user.username
+    : "";
+
+  const selectedLyricTab = lyricSearchParam ? lyricSearchParam : firstUsername;
+
+  function handleLyricTabChange(value: string) {
+    navigate(`/songs/${song.slug}?lyric=${value}`);
+  }
 
   return (
     <div className="my-8 overflow-x-hidden">
@@ -81,12 +96,16 @@ export default function SongSlug({ loaderData }: Route.ComponentProps) {
         </div>
       </section>
 
-      {Array.isArray(song.lyrics) && song.lyrics.length > 0 && (
-        <Tabs defaultValue={song.lyrics[0]?.id} className="mt-4 w-full">
+      {Array.isArray(song.lyrics) && (
+        <Tabs
+          defaultValue={selectedLyricTab}
+          onValueChange={handleLyricTabChange}
+          className="mt-4 w-full"
+        >
           <TabsList className="scrollbar-thin flex max-w-full overflow-x-auto whitespace-nowrap">
             {song.lyrics?.map((lyric) => {
               return (
-                <TabsTrigger key={lyric.id} value={lyric.id}>
+                <TabsTrigger key={lyric.id} value={lyric.user.username}>
                   {lyric.user.username}
                 </TabsTrigger>
               );
@@ -105,7 +124,7 @@ export default function SongSlug({ loaderData }: Route.ComponentProps) {
             const isLyricOwner = lyric.userId === user?.id;
 
             return (
-              <TabsContent key={lyric.id} value={lyric.id}>
+              <TabsContent key={lyric.id} value={lyric.user.username}>
                 <div key={lyric.id} className="mb-6">
                   {isAuthenticated && isLyricOwner && (
                     <Button asChild size="sm" className="mb-2">
