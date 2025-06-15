@@ -9,9 +9,15 @@ export const ArtistSchema = z.object({
   updatedAt: z.date(),
 });
 
-export const CreateArtistSchema = ArtistSchema.omit({
-  createdAt: true,
-  updatedAt: true,
+export const CreateArtistSchema = ArtistSchema.pick({
+  name: true,
+  imageUrl: true,
+});
+
+export const UpdateArtistSchema = ArtistSchema.pick({
+  id: true,
+  name: true,
+  imageUrl: true,
 });
 
 export type Artist = z.infer<typeof ArtistSchema>;

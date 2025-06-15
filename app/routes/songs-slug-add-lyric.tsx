@@ -1,6 +1,6 @@
 import { getFormProps, useForm, useInputControl } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
-import { Form, href, redirect } from "react-router";
+import { Form, href, redirect, useNavigation } from "react-router";
 
 import MinimalTiptapEditor from "~/components/minimal-tiptap-editor";
 import { Button } from "~/components/ui/button";
@@ -11,11 +11,8 @@ import { getSession } from "~/sessions.server";
 import type { Route } from "./+types/songs-slug-add-lyric";
 
 export function meta({}: Route.MetaArgs) {
-  return [{ title: "Add Lyric to Song" }];
+  return [{ title: "Lyrifix - Add Lyric" }];
 }
-
-export type LoaderSuccessResponse =
-  paths["/songs/:slug"]["get"]["responses"][200]["content"]["application/json"];
 
 export type ActionSuccessResponse =
   paths["/lyrics"]["post"]["responses"][200]["content"]["application/json"];
@@ -98,6 +95,8 @@ export default function SongsSlugAddLyric({
   actionData,
   loaderData,
 }: Route.ComponentProps) {
+  const navigation = useNavigation();
+  const isSubmitting = navigation.state === "submitting";
   const [form, fields] = useForm({
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: CreateLyricSchema });
@@ -159,9 +158,11 @@ export default function SongsSlugAddLyric({
               {fields.text.errors.join(", ")}
             </p>
           )}
-          <Button className="mt-4 w-full" type="submit">
-            Save Lyric
-          </Button>
+          <div>
+            <Button className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? "Saving Lyric..." : "Save Lyric"}
+            </Button>
+          </div>
         </Form>
       </div>
     </div>

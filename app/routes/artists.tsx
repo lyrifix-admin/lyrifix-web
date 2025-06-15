@@ -1,8 +1,8 @@
 import type { Route } from "./+types/artists";
-import { Link } from "react-router";
+import { href, Link } from "react-router";
 import { $fetch } from "~/lib/fetch";
 import type { paths } from "~/schema";
-import { PaletteIcon, PlusIcon } from "lucide-react";
+import { PlusIcon } from "lucide-react";
 import { Card, CardContent, CardTitle } from "~/components/ui/card";
 import { getSession } from "~/sessions.server";
 
@@ -60,7 +60,10 @@ export default function ArtistRoute({ loaderData }: Route.ComponentProps) {
             key={artists.id}
             className="flex h-full flex-col transition-all duration-200 hover:scale-105"
           >
-            <Link to={`/artists`} className="flex h-full flex-1 flex-col">
+            <Link
+              to={href("/artists/:slug/edit", { slug: artists.slug })}
+              className="flex h-full flex-1 flex-col"
+            >
               <Card
                 key={artists.id}
                 className={

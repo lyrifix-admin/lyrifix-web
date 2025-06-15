@@ -28,7 +28,8 @@ export const BottomNavbar = ({ isAuthenticated, user }: BottomNavbarProps) => {
           to="/artists"
           className={`flex flex-col items-center ${
             location.pathname.startsWith("/artists") ||
-            location.pathname === "/add-artist"
+            location.pathname === "/add-artist" ||
+            location.pathname === "/artists/:slug/edit"
               ? "text-fuchsia-400"
               : ""
           }`}

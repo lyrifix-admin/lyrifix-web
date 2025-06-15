@@ -1,41 +1,53 @@
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import type { Route } from "./+types/add-artist";
+import type { paths } from "~/schema";
+import type { Route } from "./+types/artists-slug-edit";
+import { $fetch, createAuthFetch } from "~/lib/fetch";
 import { Form, href, redirect, useNavigation } from "react-router";
 import { getFormProps, getInputProps, useForm } from "@conform-to/react";
+import { parseWithZod } from "@conform-to/zod";
+import { UpdateArtistSchema } from "~/schemas/artist";
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Label } from "~/components/ui/label";
 import { Input } from "~/components/ui/input";
-import { Button } from "~/components/ui/button";
-import { parseWithZod } from "@conform-to/zod";
-import { CreateArtistSchema } from "~/schemas/artist";
-import { useState } from "react";
 import { SingleFileUploader } from "~/components/single-uploadcare";
+import { Button } from "~/components/ui/button";
 import { getSession } from "~/sessions.server";
-import { createAuthFetch } from "~/lib/fetch";
-import type { paths } from "~/schema";
 
-export type ActionSuccessResponse =
-  paths["/artists"]["post"]["responses"][200]["content"]["application/json"];
+type ArtistSuccessResponse =
+  paths["/artists/{slug}"]["get"]["responses"][200]["content"]["application/json"];
+type ActionSuccessResponse =
+  paths["/artists/{id}"]["patch"]["responses"][200]["content"]["application/json"];
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Add New Artists - Lyrifix" },
+    { title: "Lyrifix - Edit Artist" },
     {
       name: "description",
-      content: "Discover artists and their music on Lyrifix.",
+      content: "Edit Artist",
     },
   ];
 }
 
-export async function loader({ request }: Route.LoaderArgs) {
+export async function loader({ params }: Route.LoaderArgs) {
+  const { slug } = params;
+
+  const artistResponse = await $fetch<ArtistSuccessResponse>("/artists/:slug", {
+    params: { slug },
+  });
+
+  if (artistResponse.error)
+    throw new Response("Artist not found", { status: 404 });
+
   return {
+    artist: artistResponse.data,
     uploadcarePublicKey: process.env.VITE_UPLOADCARE_PUBLIC_KEY ?? "",
   };
 }
 
 export async function action({ request }: Route.ClientActionArgs) {
   const formData = await request.formData();
+  const submission = parseWithZod(formData, { schema: UpdateArtistSchema });
 
-  const submission = parseWithZod(formData, { schema: CreateArtistSchema });
   if (submission.status !== "success") return submission.reply();
 
   const session = await getSession(request.headers.get("Cookie"));
@@ -47,41 +59,42 @@ export async function action({ request }: Route.ClientActionArgs) {
   const $fetch = createAuthFetch(token);
   const payload = { ...submission.value, userId };
 
-  const { data: artist, error } = await $fetch<ActionSuccessResponse>(
-    "/artists",
+  const { data, error } = await $fetch<ActionSuccessResponse>(
+    `/artists/${submission.value.id}`,
     {
-      method: "POST",
+      method: "PATCH",
       body: payload,
     },
   );
 
-  if (!artist || error) {
+  if (!data || error) {
     return submission.reply({
-      fieldErrors: { name: ["Failed to add artist."] },
+      fieldErrors: { name: ["Failed to update artist."] },
     });
   }
 
   return redirect(href("/artists"));
 }
 
-export default function AddArtistRoute({
+export default function ArtistsSlugEditRoute({
   actionData,
   loaderData,
 }: Route.ComponentProps) {
-  const { uploadcarePublicKey } = loaderData;
+  const { artist, uploadcarePublicKey } = loaderData;
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
 
   const [form, fields] = useForm({
     onValidate({ formData }) {
-      return parseWithZod(formData, { schema: CreateArtistSchema });
+      return parseWithZod(formData, { schema: UpdateArtistSchema });
     },
     lastResult: actionData,
     shouldValidate: "onBlur",
     shouldRevalidate: "onBlur",
     defaultValue: {
-      name: "",
-      imageUrl: "",
+      id: artist.id,
+      name: artist.name,
+      imageUrl: artist.imageUrl,
     },
   });
 
@@ -91,9 +104,7 @@ export default function AddArtistRoute({
     <div className="flex flex-col items-center pt-10">
       <Card className="w-xs">
         <CardHeader>
-          <CardTitle className="text-center font-bold">
-            Add New Artist
-          </CardTitle>
+          <CardTitle className="text-center font-bold">Edit Artist</CardTitle>
         </CardHeader>
 
         <CardContent>
@@ -102,6 +113,8 @@ export default function AddArtistRoute({
             {...getFormProps(form)}
             className="mr-4 ml-4 space-y-4"
           >
+            <input {...getInputProps(fields.id, { type: "hidden" })} />
+
             <div className="flex flex-col gap-1">
               <Label htmlFor={fields.name.id}>Artist Name</Label>
               <Input

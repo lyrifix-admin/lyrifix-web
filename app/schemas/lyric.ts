@@ -17,7 +17,13 @@ export const CreateLyricSchema = LyricSchema.omit({
   updatedAt: true,
 });
 
+export const UpdateLyricSchema = LyricSchema.pick({
+  id: true,
+  text: true,
+});
+
 export const CreateLyricschema = z.array(CreateLyricSchema);
+export const UpdateLyricschema = z.array(UpdateLyricSchema);
 
 export type Lyric = z.infer<typeof LyricSchema>;
 export type Lyrics = z.infer<typeof LyricsSchema>;
