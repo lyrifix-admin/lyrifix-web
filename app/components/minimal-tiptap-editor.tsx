@@ -3,6 +3,7 @@ import { EditorContent, useEditor, type Content } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { Bold, Italic, Strikethrough } from "lucide-react";
 import { useEffect } from "react";
+import HardBreak from "@tiptap/extension-hard-break";
 
 import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
 import { cn } from "~/lib/utils";
@@ -32,11 +33,19 @@ export default function MinimalTiptapEditor({
   const editor = useEditor({
     content,
     extensions: [
-      StarterKit,
+      StarterKit.configure({
+        hardBreak: false,
+      }),
       Placeholder.configure({
         placeholder: () => {
           return "The the lyric here...";
         },
+      }),
+      HardBreak.configure({
+        HTMLAttributes: {
+          class: "line-break",
+        },
+        keepMarks: false,
       }),
     ],
     editable,
@@ -46,6 +55,23 @@ export default function MinimalTiptapEditor({
     },
     immediatelyRender: false,
   });
+  useEffect(() => {
+    if (!editor) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        editor.commands.setHardBreak();
+      }
+    };
+
+    const dom = editor.view.dom;
+    dom.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      dom.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [editor]);
 
   useEffect(() => {
     if (editor && content !== editor.getHTML()) {
