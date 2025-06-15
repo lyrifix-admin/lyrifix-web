@@ -1,4 +1,4 @@
-import { href, Link, useNavigate } from "react-router";
+import { Form, href, Link, useNavigate } from "react-router";
 
 import { Button } from "~/components/ui/button";
 import { $fetch } from "~/lib/fetch";
@@ -7,6 +7,7 @@ import type { paths } from "~/schema";
 import { getSession } from "~/sessions.server";
 import type { Route } from "./+types/song-slug";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "~/components/ui/tabs";
+import { ArrowUpIcon } from "lucide-react";
 
 type SuccessResponse =
   paths["/songs/{slug}"]["get"]["responses"][200]["content"]["application/json"];
@@ -133,6 +134,16 @@ export default function SongSlug({ loaderData }: Route.ComponentProps) {
             return (
               <TabsContent key={lyric.id} value={lyric.user.username}>
                 <div key={lyric.id} className="mb-6">
+                  {isAuthenticated && (
+                    // TODO: Upvote action to backend API
+                    <Form method="POST">
+                      <input type="hidden" defaultValue={lyric.id} />
+                      <Button asChild size="sm" className="mb-2">
+                        <ArrowUpIcon />
+                      </Button>
+                    </Form>
+                  )}
+
                   {isAuthenticated && isLyricOwner && (
                     <Button asChild size="sm" className="mb-2">
                       <Link
