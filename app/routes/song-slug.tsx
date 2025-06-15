@@ -52,6 +52,11 @@ export default function SongSlug({ loaderData }: Route.ComponentProps) {
 
   const isSongOwner = song.userId === user?.id;
 
+  // Prevent user to add more than 1 lyric in 1 song
+  const isAlreadyAddedLyric = song.lyrics?.find(
+    (lyric) => lyric.userId === user?.id,
+  );
+
   const firstUsername = Array.isArray(song.lyrics)
     ? song.lyrics[0]?.user.username
     : "";
@@ -88,11 +93,13 @@ export default function SongSlug({ loaderData }: Route.ComponentProps) {
             </Button>
           )}
 
-          <Button asChild size="sm">
-            <Link to={href("/songs/:slug/add-lyric", { slug: song.slug })}>
-              Add Lyric
-            </Link>
-          </Button>
+          {!isAlreadyAddedLyric && (
+            <Button asChild size="sm">
+              <Link to={href("/songs/:slug/add-lyric", { slug: song.slug })}>
+                Add Lyric
+              </Link>
+            </Button>
+          )}
         </div>
       </section>
 
