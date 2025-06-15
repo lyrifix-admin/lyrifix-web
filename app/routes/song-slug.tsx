@@ -6,7 +6,6 @@ import { parseHTML } from "~/lib/html";
 import type { paths } from "~/schema";
 import { getSession } from "~/sessions.server";
 import type { Route } from "./+types/song-slug";
-import { Debug } from "~/components/ui/debug";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "~/components/ui/tabs";
 
 type SuccessResponse =
@@ -36,11 +35,6 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 export default function SongSlug({ loaderData }: Route.ComponentProps) {
   const { isAuthenticated, user, song } = loaderData;
 
-  const selectedSongLyric =
-    song.lyrics?.length && song.lyrics.length > 0
-      ? song.lyrics[0]?.text
-      : undefined;
-
   const lyricsByUser: Record<string, typeof song.lyrics> = {};
 
   for (const lyric of song.lyrics ?? []) {
@@ -50,7 +44,8 @@ export default function SongSlug({ loaderData }: Route.ComponentProps) {
     }
     lyricsByUser[key].push(lyric);
   }
-  const isOwner = song.userId === user?.id;
+
+  const isSongOwner = song.userId === user?.id;
 
   return (
     <div className="my-8 overflow-x-hidden">
@@ -70,42 +65,76 @@ export default function SongSlug({ loaderData }: Route.ComponentProps) {
         </p>
 
         <div className="flex gap-2">
+          {isAuthenticated && isSongOwner && (
+            <Button asChild size="sm">
+              <Link to={href("/songs/:slug/edit", { slug: song.slug })}>
+                Edit Song
+              </Link>
+            </Button>
+          )}
+
           <Button asChild size="sm">
             <Link to={href("/songs/:slug/add-lyric", { slug: song.slug })}>
               Add Lyric
             </Link>
           </Button>
-          {isAuthenticated && isOwner && (
-            <Button asChild size="sm">
-              <Link to={href("/songs/:slug/edit", { slug: song.slug })}>
-                Edit
-              </Link>
-            </Button>
-          )}
         </div>
       </section>
 
-      {/* TODO */}
-      <Tabs
-        defaultValue={Object.keys(lyricsByUser ?? {})[0] ?? ""}
-        className="mt-4 w-full"
-      >
-        <TabsList className="scrollbar-thin flex max-w-full overflow-x-auto whitespace-nowrap">
-          {Object.entries(lyricsByUser).map(([userId], index) => (
+      {Array.isArray(song.lyrics) && song.lyrics.length > 0 && (
+        <Tabs defaultValue={song.lyrics[0]?.id} className="mt-4 w-full">
+          <TabsList className="scrollbar-thin flex max-w-full overflow-x-auto whitespace-nowrap">
+            {song.lyrics?.map((lyric) => {
+              return (
+                <TabsTrigger key={lyric.id} value={lyric.id}>
+                  {lyric.user.username}
+                </TabsTrigger>
+              );
+            })}
+
+            {/* {Object.entries(lyricsByUser).map(([userId], index) => (
             <TabsTrigger key={userId} value={userId}>
               {userId === "_unknown"
                 ? "Unknown"
                 : `User ${index + 1} - ${userId}`}
             </TabsTrigger>
-          ))}
-        </TabsList>
-        {Object.entries(lyricsByUser ?? {}).map(([userId, lyrics]) => (
+          ))} */}
+          </TabsList>
+
+          {song.lyrics?.map((lyric) => {
+            const isLyricOwner = lyric.userId === user?.id;
+
+            return (
+              <TabsContent key={lyric.id} value={lyric.id}>
+                <div key={lyric.id} className="mb-6">
+                  {isAuthenticated && isLyricOwner && (
+                    <Button asChild size="sm" className="mb-2">
+                      <Link
+                        to={href("/songs/:slug/lyrics/:id/edit", {
+                          slug: song.slug,
+                          id: lyric.id,
+                        })}
+                      >
+                        Edit Lyric
+                      </Link>
+                    </Button>
+                  )}
+
+                  <div className="prose text-left text-lg whitespace-pre-line text-white">
+                    {parseHTML(lyric.text)}
+                  </div>
+                </div>
+              </TabsContent>
+            );
+          })}
+
+          {/* {Object.entries(lyricsByUser ?? {}).map(([userId, lyrics]) => (
           <TabsContent key={userId} value={userId} className="mt-4">
             {lyrics?.map((lyric) => {
-              const isOwner = lyric.userId === user?.id;
+              const isLyricOwner = lyric.userId === user?.id;
               return (
                 <div key={lyric.id} className="mb-6">
-                  {isAuthenticated && isOwner && (
+                  {isAuthenticated && isLyricOwner && (
                     <Button asChild size="sm" className="mb-2">
                       <Link
                         to={href("/songs/:slug/lyrics/:id/edit", {
@@ -125,9 +154,9 @@ export default function SongSlug({ loaderData }: Route.ComponentProps) {
               );
             })}
           </TabsContent>
-        ))}
-      </Tabs>
-      {/* <Debug>{song}</Debug> */}
+        ))} */}
+        </Tabs>
+      )}
     </div>
   );
 }

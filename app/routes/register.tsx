@@ -25,7 +25,7 @@ export async function action({ request }: Route.ClientActionArgs) {
   const formData = await request.formData();
   const submission = parseWithZod(formData, { schema: RegisterSchema });
 
-  console.log({ submission });
+  // console.log({ submission });
 
   if (submission.status !== "success") return submission.reply();
 
@@ -34,7 +34,7 @@ export async function action({ request }: Route.ClientActionArgs) {
     body: submission.value,
   });
 
-  console.log(JSON.stringify(error, null, 2));
+  // console.log(JSON.stringify(error, null, 2));
 
   if (!data || error) return submission.reply();
 

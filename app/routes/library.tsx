@@ -64,12 +64,20 @@ export default function LibraryRoute({ loaderData }: Route.ComponentProps) {
           <p className="mb-6 text-gray-400">
             Start building your collection by adding your first song
           </p>
-          <Link to="/add-song">
-            <Button className="hover:bg-fuchsia-500">
-              <PlusIcon className="mr-2 h-4 w-4" />
-              Add Your First Song
+          <div className="flex flex-col flex-wrap items-center gap-2">
+            <Button asChild>
+              <Link to="/">
+                <PlusIcon className="mr-2 h-4 w-4" />
+                <span>Explore Songs to Add Lyric</span>
+              </Link>
             </Button>
-          </Link>
+            <Button asChild variant="secondary">
+              <Link to="/add-song">
+                <PlusIcon className="mr-2 h-4 w-4" />
+                <span>Add Your First Song</span>
+              </Link>
+            </Button>
+          </div>
         </div>
       ) : (
         <ul className="grid grid-cols-1 items-stretch gap-4 md:grid-cols-2 lg:grid-cols-2">

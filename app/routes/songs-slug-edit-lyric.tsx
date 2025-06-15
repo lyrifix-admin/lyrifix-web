@@ -1,20 +1,17 @@
 import type { paths } from "~/schema";
 import type { Route } from "./+types/songs-slug-edit-lyric";
 import { createAuthFetch } from "~/lib/fetch";
-import { Form, href, Link, redirect, useNavigation } from "react-router";
-import { getFormProps, useForm, useInputControl } from "@conform-to/react";
+import { Form, Link, redirect, useNavigation } from "react-router";
+import { getFormProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { UpdateLyricSchema } from "~/schemas/lyric";
 import { Button } from "~/components/ui/button";
 import { getSession } from "~/sessions.server";
 import MinimalTiptapEditor from "~/components/minimal-tiptap-editor";
-import { Debug } from "~/components/ui/debug";
 import { useState } from "react";
 
 type SongWithLyricsResponse =
   paths["/songs/{slug}"]["get"]["responses"][200]["content"]["application/json"];
-type LyricsSuccessResponse =
-  paths["/lyrics/{slug}"]["get"]["responses"][200]["content"]["application/json"];
 
 type ActionSuccessResponse =
   paths["/lyrics/{id}"]["patch"]["responses"][200]["content"]["application/json"];
@@ -37,7 +34,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   const $fetch = createAuthFetch(token);
   const { slug, id } = params;
 
-  console.log("Loader params:", { slug, id });
+  // console.log("Loader params:", { slug, id });
 
   try {
     const { data: songData } = await $fetch<SongWithLyricsResponse>(
@@ -55,7 +52,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     }
 
     const targetLyric = songData.lyrics.find((lyric) => lyric.id === id);
-    console.log("Target lyric found:", targetLyric);
+    // console.log("Target lyric found:", targetLyric);
 
     if (!targetLyric) {
       throw new Response("Lyric not found", { status: 404 });
@@ -107,8 +104,7 @@ export default function LyricsSlugEditRoute({
   actionData,
   loaderData,
 }: Route.ComponentProps) {
-  const lyricData =
-    (loaderData.lyric as { lyric?: any })?.lyric || loaderData.lyric;
+  const lyric = loaderData.lyric;
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
 
@@ -120,12 +116,12 @@ export default function LyricsSlugEditRoute({
     shouldValidate: "onBlur",
     shouldRevalidate: "onBlur",
     defaultValue: {
-      id: lyricData?.id || "",
-      text: lyricData?.text || "",
+      id: lyric.id || "",
+      text: lyric.text || "",
     },
   });
 
-  const [editorText, setEditorText] = useState(lyricData?.text || "");
+  const [editorText, setEditorText] = useState(lyric.text || "");
 
   return (
     <div className="flex w-full items-center justify-center bg-zinc-950">
@@ -138,7 +134,7 @@ export default function LyricsSlugEditRoute({
           {...getFormProps(form)}
           className="flex flex-col gap-4"
         >
-          <input type="hidden" name="id" value={lyricData?.id || ""} />
+          <input type="hidden" name="id" value={lyric.id || ""} />
 
           <label
             hidden
@@ -154,7 +150,7 @@ export default function LyricsSlugEditRoute({
               name={fields.text.name}
               content={editorText}
               onChange={(val) => {
-                console.log("MinimalTiptapEditor onChange:", val);
+                // console.log("MinimalTiptapEditor onChange:", val);
                 setEditorText(val);
               }}
             />

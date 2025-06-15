@@ -66,7 +66,7 @@ export async function action({ request }: Route.ClientActionArgs) {
     });
   }
   session.set("user", userProfile);
-  console.log(data);
+  // console.log(data);
 
   return redirect(href("/library"), {
     headers: { "Set-Cookie": await commitSession(session) },
