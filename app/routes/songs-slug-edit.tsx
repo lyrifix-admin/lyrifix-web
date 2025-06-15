@@ -20,8 +20,10 @@ import { getSession } from "~/sessions.server";
 
 type SongSuccessResponse =
   paths["/songs/{slug}"]["get"]["responses"][200]["content"]["application/json"];
+
 type ArtistsSuccessResponse =
   paths["/artists"]["get"]["responses"][200]["content"]["application/json"];
+
 type ActionSuccessResponse =
   paths["/songs/{id}"]["patch"]["responses"][200]["content"]["application/json"];
 
@@ -35,7 +37,7 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-export async function loader({ params }: Route.LoaderArgs) {
+export async function loader({ params, request }: Route.LoaderArgs) {
   const { slug } = params;
 
   const [songResponse, artistsResponse] = await Promise.all([
@@ -49,6 +51,14 @@ export async function loader({ params }: Route.LoaderArgs) {
 
   if (!artistsResponse.data || artistsResponse.error)
     throw new Response("No artists data", { status: 500 });
+
+  const session = await getSession(request.headers.get("Cookie"));
+  const user = session.get("user");
+  const userId = user?.id;
+
+  if (songResponse.data.userId !== userId) {
+    throw new Response("Song not found", { status: 404 });
+  }
 
   return {
     song: songResponse.data,
