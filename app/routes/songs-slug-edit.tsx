@@ -97,7 +97,8 @@ export async function action({ request }: Route.ClientActionArgs) {
       fieldErrors: { title: ["Failed to update song."] },
     });
   }
-  return redirect(href("/library"));
+
+  return redirect(href("/songs/:slug", { slug: data.slug }));
 }
 
 export default function SongSlugEdit({

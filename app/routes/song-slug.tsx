@@ -50,12 +50,12 @@ export default function SongSlug({ loaderData }: Route.ComponentProps) {
     lyricsByUser[key].push(lyric);
   }
 
-  const isSongOwner = song.userId === user?.id;
-
   // Prevent user to add more than 1 lyric in 1 song
   const isAlreadyAddedLyric = song.lyrics?.find(
     (lyric) => lyric.userId === user?.id,
   );
+
+  const hasLyrics = Array.isArray(song.lyrics) && song.lyrics.length > 0;
 
   const firstUsername = Array.isArray(song.lyrics)
     ? song.lyrics[0]?.user.username
@@ -85,7 +85,7 @@ export default function SongSlug({ loaderData }: Route.ComponentProps) {
         </p>
 
         <div className="flex gap-2">
-          {isAuthenticated && isSongOwner && (
+          {isAuthenticated && (
             <Button asChild size="sm">
               <Link to={href("/songs/:slug/edit", { slug: song.slug })}>
                 Edit Song
@@ -103,7 +103,7 @@ export default function SongSlug({ loaderData }: Route.ComponentProps) {
         </div>
       </section>
 
-      {Array.isArray(song.lyrics) && (
+      {hasLyrics && (
         <Tabs
           defaultValue={selectedLyricTab}
           onValueChange={handleLyricTabChange}
