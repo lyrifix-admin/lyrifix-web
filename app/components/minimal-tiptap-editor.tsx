@@ -4,6 +4,7 @@ import StarterKit from "@tiptap/starter-kit";
 import { Bold, Italic, Strikethrough } from "lucide-react";
 import { useEffect } from "react";
 import HardBreak from "@tiptap/extension-hard-break";
+import Paragraph from "@tiptap/extension-paragraph";
 
 import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
 import { cn } from "~/lib/utils";
@@ -35,6 +36,7 @@ export default function MinimalTiptapEditor({
     extensions: [
       StarterKit.configure({
         hardBreak: false,
+        paragraph: false,
       }),
       Placeholder.configure({
         placeholder: () => {
@@ -46,6 +48,9 @@ export default function MinimalTiptapEditor({
           class: "line-break",
         },
         keepMarks: false,
+      }),
+      Paragraph.configure({
+        HTMLAttributes: { class: "paragraph" },
       }),
     ],
     editable,
@@ -104,6 +109,12 @@ export default function MinimalTiptapEditor({
           value="strike"
         >
           <Strikethrough className="h-4 w-4" />
+        </ToggleGroupItem>
+        <ToggleGroupItem
+          onClick={() => editor?.chain().focus().setHardBreak().run()}
+          value="break-line"
+        >
+          <span className="text-xs">↵</span>
         </ToggleGroupItem>
       </ToggleGroup>
       <div className="overflow-y-auto">
