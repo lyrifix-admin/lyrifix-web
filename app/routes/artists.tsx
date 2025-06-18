@@ -61,7 +61,7 @@ export default function ArtistRoute({ loaderData }: Route.ComponentProps) {
             className="flex h-full flex-col transition-all duration-200 hover:scale-105"
           >
             <Link
-              to={href("/artists/:slug/edit", { slug: artists.slug })}
+              to={`/artists/${artists.slug}`}
               className="flex h-full flex-1 flex-col"
             >
               <Card
