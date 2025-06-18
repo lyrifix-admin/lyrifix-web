@@ -22,6 +22,7 @@ export default [
     route("songs/:slug/lyrics/:id/edit", "routes/songs-slug-edit-lyric.tsx"),
 
     route("artists", "routes/artists.tsx"),
+    route("artists/:slug", "routes/artist-slug.tsx"),
     route("add-artist", "routes/add-artist.tsx"),
     route("artists/:slug/edit", "routes/artists-slug-edit.tsx"),
 
