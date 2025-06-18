@@ -7,7 +7,7 @@ import type { paths } from "~/schema";
 import { getSession } from "~/sessions.server";
 import type { Route } from "./+types/song-slug";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "~/components/ui/tabs";
-import { ArrowUpIcon } from "lucide-react";
+import { ArrowUpIcon, PencilIcon } from "lucide-react";
 
 type SuccessResponse =
   paths["/songs/{slug}"]["get"]["responses"][200]["content"]["application/json"];
@@ -134,29 +134,37 @@ export default function SongSlug({ loaderData }: Route.ComponentProps) {
             return (
               <TabsContent key={lyric.id} value={lyric.user.username}>
                 <div key={lyric.id} className="mb-6">
-                  {isAuthenticated && (
-                    // TODO: Upvote action to backend API
-                    <Form method="POST">
-                      <input type="hidden" defaultValue={lyric.id} />
+                  <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:space-x-4">
+                    {isAuthenticated && (
+                      // TODO: Upvote action to backend API
+                      <Form method="POST">
+                        <input type="hidden" defaultValue={lyric.id} />
+                        <Button asChild size="sm" className="mb-2">
+                          <Link
+                            to="#top"
+                            className="flex items-center space-x-1"
+                          >
+                            <ArrowUpIcon className="h-4 w-4" />
+                            <span>Upvote</span>
+                          </Link>
+                        </Button>
+                      </Form>
+                    )}
+
+                    {isAuthenticated && isLyricOwner && (
                       <Button asChild size="sm" className="mb-2">
-                        <ArrowUpIcon />
+                        <Link
+                          to={href("/songs/:slug/lyrics/:id/edit", {
+                            slug: song.slug,
+                            id: lyric.id,
+                          })}
+                        >
+                          <PencilIcon className="h-4 w-4" />
+                          <span>Edit Lyric</span>
+                        </Link>
                       </Button>
-                    </Form>
-                  )}
-
-                  {isAuthenticated && isLyricOwner && (
-                    <Button asChild size="sm" className="mb-2">
-                      <Link
-                        to={href("/songs/:slug/lyrics/:id/edit", {
-                          slug: song.slug,
-                          id: lyric.id,
-                        })}
-                      >
-                        Edit Lyric
-                      </Link>
-                    </Button>
-                  )}
-
+                    )}
+                  </div>
                   <div className="prose text-left text-lg whitespace-pre-line text-white">
                     {parseHTML(lyric.text)}
                   </div>
