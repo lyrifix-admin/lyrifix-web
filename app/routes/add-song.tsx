@@ -23,6 +23,7 @@ import type { Route } from "./+types/add-song";
 
 type LoaderSuccessResponse =
   paths["/artists"]["get"]["responses"][200]["content"]["application/json"];
+
 export type ActionSuccessResponse =
   paths["/songs"]["post"]["responses"][200]["content"]["application/json"];
 
