@@ -121,6 +121,7 @@ export default function SongSlugEdit({
       imageUrl: song.imageUrl ?? "",
       title: song.title,
       artistIds: song.artists?.map((artist) => artist.id) ?? [],
+      spotifyUrl: song.spotifyUrl ?? "",
     },
   });
 
@@ -187,6 +188,15 @@ export default function SongSlugEdit({
               className="border-zinc-700 bg-zinc-800"
             />
             <p className="text-sm text-red-500">{fields.artistIds.errors}</p>
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <Input
+              {...getInputProps(fields.spotifyUrl, { type: "text" })}
+              placeholder="Spotify URL"
+              className="border-zinc-700 bg-zinc-800"
+            />
+            <p className="text-sm text-red-500">{fields.spotifyUrl.errors}</p>
           </div>
         </div>
 
