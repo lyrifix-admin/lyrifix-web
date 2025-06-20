@@ -20,6 +20,10 @@ export const CreateSongSchema = z.object({
   title: z.string().min(1),
   artistIds: z.array(z.string().min(1)),
   userId: z.string().ulid().optional(),
+  spotifyUrl: z
+    .string()
+    .optional()
+    .transform((val) => (val?.trim() ? val : null)),
 });
 
 export const UpdateSongSchema = z.object({
@@ -27,7 +31,10 @@ export const UpdateSongSchema = z.object({
   imageUrl: z.string().min(1),
   title: z.string().min(1),
   artistIds: z.array(z.string().min(1)),
-  // lyric: z.string().min(1),
+  spotifyUrl: z
+    .string()
+    .optional()
+    .transform((val) => (val?.trim() ? val : null)),
 });
 
 export type Song = z.infer<typeof SongSchema>;
