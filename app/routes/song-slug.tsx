@@ -8,9 +8,14 @@ import { getSession } from "~/sessions.server";
 import type { Route } from "./+types/song-slug";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "~/components/ui/tabs";
 import { ArrowUpIcon, PencilIcon } from "lucide-react";
+import { parseWithZod } from "@conform-to/zod";
+import { UpdateLyricSchema } from "~/schemas/lyric";
 
 type SuccessResponse =
   paths["/songs/{slug}"]["get"]["responses"][200]["content"]["application/json"];
+
+type UpvoteSuccessResponse =
+  paths["/lyrics/{id}/upvote"]["patch"]["responses"][200]["content"]["application/json"];
 
 export function meta({ data }: Route.MetaArgs) {
   const song = data?.song;
@@ -34,6 +39,20 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   const lyricSearchParam = url.searchParams.get("lyric");
 
   return { isAuthenticated, user, song, lyricSearchParam };
+}
+
+export async function action({ request }: Route.ClientActionArgs) {
+  const formData = await request.formData();
+  // console.log("FormData:", Object.fromEntries(formData.entries()));
+
+  const submission = parseWithZod(formData, { schema: UpdateLyricSchema });
+  // console.log("Submission:", submission);
+  if (submission.status !== "success") return submission.reply();
+
+  const session = await getSession(request.headers.get("Cookie"));
+  const token = session.get("token");
+  const user = session.get("user");
+  const userId = user?.id;
 }
 
 export default function SongSlug({ loaderData }: Route.ComponentProps) {

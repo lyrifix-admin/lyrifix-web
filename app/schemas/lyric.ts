@@ -5,6 +5,8 @@ export const LyricSchema = z.object({
   slug: z.string(),
   songId: z.string(),
   text: z.string(),
+  upvoteCount: z.number(),
+  upvote: z.boolean(),
   createdAt: z.date(),
   updatedAt: z.date(),
 });
@@ -20,6 +22,8 @@ export const CreateLyricSchema = LyricSchema.omit({
 export const UpdateLyricSchema = LyricSchema.pick({
   id: true,
   text: true,
+  upvote: true,
+  upvoteCount: true,
 });
 
 export const CreateLyricschema = z.array(CreateLyricSchema);
