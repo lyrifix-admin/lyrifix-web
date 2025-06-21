@@ -120,6 +120,19 @@ export default function SongSlug({ loaderData }: Route.ComponentProps) {
               </Link>
             </Button>
           )}
+
+          {song.spotifyUrl && (
+            <Button size="sm" asChild>
+              <Link to={song.spotifyUrl} target="_blank">
+                <img
+                  src="/images/spotify.svg"
+                  alt="Spotify"
+                  className="h-4 w-4"
+                />
+                <span>Spotify</span>
+              </Link>
+            </Button>
+          )}
         </div>
       </section>
 

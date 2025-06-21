@@ -65,7 +65,7 @@ export async function action({ request }: Route.ClientActionArgs) {
 
   const $fetch = createAuthFetch(token);
   const payload = { ...submission.value, userId };
-  // console.log("Payload to API:", payload);
+  console.log("Payload to API:", payload);
 
   const { data: song, error } = await $fetch<ActionSuccessResponse>("/songs", {
     method: "POST",
@@ -135,7 +135,7 @@ export default function AddSongRoute({
             className="mr-4 ml-4 space-y-4"
           >
             <div className="flex flex-col gap-1">
-              <Label htmlFor={fields.title.id}>Song Title</Label>
+              <Label htmlFor={fields.title.id}>Song Title *</Label>
               <Input
                 {...getInputProps(fields.title, { type: "text" })}
                 placeholder="Song Title"
@@ -145,7 +145,7 @@ export default function AddSongRoute({
             </div>
 
             <div className="flex flex-col gap-1">
-              <Label htmlFor={fields.artistIds.id}>Select Artists</Label>
+              <Label htmlFor={fields.artistIds.id}>Select Artists *</Label>
 
               <MultiselectArtists
                 defaultOptions={defaultOptions}
@@ -165,6 +165,16 @@ export default function AddSongRoute({
                   </li>
                 ))}
               </ul>
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <Label htmlFor={fields.spotifyUrl.id}>Spotify URL</Label>
+              <Input
+                {...getInputProps(fields.spotifyUrl, { type: "text" })}
+                placeholder="Spotify URL"
+                className="border-zinc-700 bg-zinc-800"
+              />
+              <p className="text-sm text-red-500">{fields.spotifyUrl.errors}</p>
             </div>
 
             <div>
