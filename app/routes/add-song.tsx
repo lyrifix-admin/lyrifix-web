@@ -177,11 +177,8 @@ export default function AddSongRoute({
               <p className="text-sm text-red-500">{fields.spotifyUrl.errors}</p>
             </div>
 
-            <div>
-              <label
-                className="flex cursor-pointer flex-col items-center"
-                htmlFor={fields.imageUrl.id}
-              >
+            <div className="flex cursor-pointer flex-col items-center">
+              <label htmlFor={fields.imageUrl.id}>
                 <SingleFileUploader
                   value={imageUrl}
                   onChange={setImageUrl}
@@ -195,6 +192,7 @@ export default function AddSongRoute({
                   className="hidden"
                 />
               </label>
+              <p className="text-sm text-red-500">{fields.imageUrl.errors}</p>
             </div>
 
             <div>
