@@ -2,6 +2,8 @@
 
 Fix the Lyrics. Feel the Music. Lyrifix is your all-in-one global lyrics platform — made for music lovers, lyric hunters, and community contributors.
 
+Access at <https://lyrifix.com>
+
 Read the complete explanation on the main repo: <https://github.com/lyrifix/lyrifix>
 
 ## Getting Started
