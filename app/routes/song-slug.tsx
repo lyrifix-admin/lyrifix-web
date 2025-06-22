@@ -84,6 +84,8 @@ export default function SongSlug({ loaderData }: Route.ComponentProps) {
 
   const { isAuthenticated, user, song, lyricSearchParam } = loaderData;
 
+  // TODO: Reorder lyrics by upvoteCount
+
   const lyricsByUser: Record<string, typeof song.lyrics> = {};
 
   for (const lyric of song.lyrics ?? []) {
@@ -170,7 +172,7 @@ export default function SongSlug({ loaderData }: Route.ComponentProps) {
             {song.lyrics?.map((lyric) => {
               return (
                 <TabsTrigger key={lyric.id} value={lyric.user.username}>
-                  {lyric.user.username}
+                  {lyric.user.username} ({lyric.upvoteCount})
                 </TabsTrigger>
               );
             })}
@@ -185,9 +187,8 @@ export default function SongSlug({ loaderData }: Route.ComponentProps) {
             return (
               <TabsContent key={lyric.id} value={lyric.user.username}>
                 <div key={lyric.id} className="mb-6">
-                  <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:space-x-4">
+                  <div className="mb-6 inline-flex flex-col gap-1 sm:flex-row sm:items-center sm:space-x-4">
                     {isAuthenticated && (
-                      // TODO: Upvote action to backend API
                       <Form method="POST">
                         <input type="hidden" name="id" value={lyric.id} />
                         <input
@@ -203,9 +204,6 @@ export default function SongSlug({ loaderData }: Route.ComponentProps) {
                         >
                           <ArrowUpIcon className="h-4 w-4" />
                           <span>Upvote</span>
-                          {lyric.upvoteCount && lyric.upvoteCount > 0 && (
-                            <span className="ml-1">({lyric.upvoteCount})</span>
-                          )}
                         </Button>
                       </Form>
                     )}
