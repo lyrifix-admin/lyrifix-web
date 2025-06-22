@@ -55,9 +55,9 @@ export default function LibraryRoute({ loaderData }: Route.ComponentProps) {
       </div>
 
       <div className="flex justify-center gap-2">
-        <Link to="/library-artist">
-          <Button>Artist</Button>
-        </Link>
+        <Button asChild>
+          <Link to="/library-artist">Artist</Link>
+        </Button>
         <Button>Lyric</Button>
       </div>
 
