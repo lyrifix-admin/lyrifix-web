@@ -1,4 +1,4 @@
-import { Form, href, Link, useNavigate } from "react-router";
+import { Form, href, Link, redirect, useNavigate } from "react-router";
 
 import { Button } from "~/components/ui/button";
 import { $fetch } from "~/lib/fetch";
@@ -8,9 +8,17 @@ import { getSession } from "~/sessions.server";
 import type { Route } from "./+types/song-slug";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "~/components/ui/tabs";
 import { ArrowUpIcon, PencilIcon } from "lucide-react";
+import { parseWithZod } from "@conform-to/zod";
+import { UpvoteSchema } from "~/schemas/lyric";
 
 type SuccessResponse =
   paths["/songs/{slug}"]["get"]["responses"][200]["content"]["application/json"];
+
+type UpvoteSuccessResponse =
+  paths["/lyrics/{id}/upvote"]["patch"]["responses"][200]["content"]["application/json"];
+
+type UpvoteCancelResponse =
+  paths["/lyrics/{id}/cancel-upvote"]["patch"]["responses"][200]["content"]["application/json"];
 
 export function meta({ data }: Route.MetaArgs) {
   const song = data?.song;
@@ -34,6 +42,40 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   const lyricSearchParam = url.searchParams.get("lyric");
 
   return { isAuthenticated, user, song, lyricSearchParam };
+}
+
+export async function action({ request }: Route.ClientActionArgs) {
+  const formData = await request.formData();
+  console.log("FormData:", Object.fromEntries(formData.entries()));
+
+  const submission = parseWithZod(formData, { schema: UpvoteSchema });
+  console.log("Submission:", submission);
+  if (submission.status !== "success") return submission.reply();
+
+  const session = await getSession(request.headers.get("Cookie"));
+  const token = session.get("token");
+
+  const { id: lyricId } = submission.value;
+  const actionType = formData.get("action");
+  const endpoint =
+    actionType === "cancel"
+      ? `/lyrics/${lyricId}/cancel-upvote`
+      : `/lyrics/${lyricId}/upvote`;
+
+  const { data, error } = await $fetch<
+    UpvoteSuccessResponse | UpvoteCancelResponse
+  >(endpoint, {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!data || error) {
+    return { success: false, message: "Failed to upvote" };
+  }
+
+  return redirect(request.url);
 }
 
 export default function SongSlug({ loaderData }: Route.ComponentProps) {
@@ -131,14 +173,6 @@ export default function SongSlug({ loaderData }: Route.ComponentProps) {
                 </TabsTrigger>
               );
             })}
-
-            {/* {Object.entries(lyricsByUser).map(([userId], index) => (
-            <TabsTrigger key={userId} value={userId}>
-              {userId === "_unknown"
-                ? "Unknown"
-                : `User ${index + 1} - ${userId}`}
-            </TabsTrigger>
-          ))} */}
           </TabsList>
 
           {song.lyrics?.map((lyric) => {
@@ -151,15 +185,22 @@ export default function SongSlug({ loaderData }: Route.ComponentProps) {
                     {isAuthenticated && (
                       // TODO: Upvote action to backend API
                       <Form method="POST">
-                        <input type="hidden" defaultValue={lyric.id} />
-                        <Button asChild size="sm" className="mb-2">
-                          <Link
-                            to="#top"
-                            className="flex items-center space-x-1"
-                          >
-                            <ArrowUpIcon className="h-4 w-4" />
-                            <span>Upvote</span>
-                          </Link>
+                        <input type="hidden" name="id" value={lyric.id} />
+                        <input
+                          type="hidden"
+                          name="action"
+                          // value={lyric.isUpvoted ? "cancel" : "upvote"}
+                        />
+                        <Button
+                          type="submit"
+                          size="sm"
+                          className="mb-2 flex items-center space-x-1"
+                        >
+                          <ArrowUpIcon className="h-4 w-4" />
+                          <span>Upvote</span>
+                          {lyric.upvoteCount && lyric.upvoteCount > 0 && (
+                            <span className="ml-1">({lyric.upvoteCount})</span>
+                          )}
                         </Button>
                       </Form>
                     )}
@@ -185,34 +226,6 @@ export default function SongSlug({ loaderData }: Route.ComponentProps) {
               </TabsContent>
             );
           })}
-
-          {/* {Object.entries(lyricsByUser ?? {}).map(([userId, lyrics]) => (
-          <TabsContent key={userId} value={userId} className="mt-4">
-            {lyrics?.map((lyric) => {
-              const isLyricOwner = lyric.userId === user?.id;
-              return (
-                <div key={lyric.id} className="mb-6">
-                  {isAuthenticated && isLyricOwner && (
-                    <Button asChild size="sm" className="mb-2">
-                      <Link
-                        to={href("/songs/:slug/lyrics/:id/edit", {
-                          slug: song.slug,
-                          id: lyric.id,
-                        })}
-                      >
-                        Edit Lyric
-                      </Link>
-                    </Button>
-                  )}
-
-                  <div className="prose text-left text-lg whitespace-pre-line text-white">
-                    {parseHTML(lyric.text)}
-                  </div>
-                </div>
-              );
-            })}
-          </TabsContent>
-        ))} */}
         </Tabs>
       )}
     </div>

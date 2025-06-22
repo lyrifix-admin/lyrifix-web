@@ -52,13 +52,13 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   if (!artistsResponse.data || artistsResponse.error)
     throw new Response("No artists data", { status: 500 });
 
-  const session = await getSession(request.headers.get("Cookie"));
-  const user = session.get("user");
-  const userId = user?.id;
+  // const session = await getSession(request.headers.get("Cookie"));
+  // const user = session.get("user");
+  // const userId = user?.id;
 
-  if (songResponse.data.userId !== userId) {
-    throw new Response("Song not found", { status: 404 });
-  }
+  // if (songResponse.data.userId !== userId) {
+  //   throw new Response("Song not found", { status: 404 });
+  // }
 
   return {
     song: songResponse.data,
@@ -70,6 +70,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
 export async function action({ request }: Route.ClientActionArgs) {
   const formData = await request.formData();
   const submission = parseWithZod(formData, { schema: UpdateSongSchema });
+  // console.log("Submission EDIT SONG:", submission);
 
   if (submission.status !== "success") return submission.reply();
 
