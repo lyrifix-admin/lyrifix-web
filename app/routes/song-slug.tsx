@@ -37,6 +37,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     params: { slug },
   });
   if (error) throw new Response("Song not found", { status: 404 });
+  // console.log(song.lyrics[0]?.votes[0]?.user.username);
 
   const url = new URL(request.url);
   const lyricSearchParam = url.searchParams.get("lyric");
@@ -177,6 +178,9 @@ export default function SongSlug({ loaderData }: Route.ComponentProps) {
 
           {song.lyrics?.map((lyric) => {
             const isLyricOwner = lyric.userId === user?.id;
+            const isUpvoted = lyric.votes.some(
+              (vote) => vote.user.id === user?.id,
+            );
 
             return (
               <TabsContent key={lyric.id} value={lyric.user.username}>
@@ -189,7 +193,7 @@ export default function SongSlug({ loaderData }: Route.ComponentProps) {
                         <input
                           type="hidden"
                           name="action"
-                          // value={lyric.isUpvoted ? "cancel" : "upvote"}
+                          value={isUpvoted ? "cancel" : "upvote"}
                         />
                         <Button
                           type="submit"
