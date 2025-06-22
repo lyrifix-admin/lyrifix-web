@@ -89,33 +89,33 @@ export default function LibraryArtistRoute({
             </Link>
           </li>
 
-          {library.artists.map((artists) => (
+          {library.artists.map((artist) => (
             <li
-              key={artists.id}
+              key={artist.id}
               className="flex h-full flex-col transition-all duration-200 hover:scale-105"
             >
               <Link
-                to={`/artists/${artists.slug}`}
+                to={`/artists/${artist.slug}`}
                 className="flex h-full flex-1 flex-col"
               >
                 <Card
-                  key={artists.id}
+                  key={artist.id}
                   className={
                     "bg-card flex h-full flex-1 flex-col items-center rounded-3xl border-2 border-fuchsia-500 p-4 text-center break-words text-white shadow-lg"
                   }
                 >
                   <img
                     src={
-                      artists.imageUrl ||
+                      artist.imageUrl ||
                       "https://placehold.co/500x500/EEE/31343C"
                     }
-                    alt={artists.name}
+                    alt={artist.name}
                     className="aspect-square h-40 w-40 rounded-2xl object-cover"
                   />
 
                   <CardContent>
                     <CardTitle className="w-full max-w-xs text-center break-words">
-                      {artists.name}
+                      {artist.name}
                     </CardTitle>
                   </CardContent>
                 </Card>
