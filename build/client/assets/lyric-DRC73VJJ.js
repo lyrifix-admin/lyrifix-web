@@ -1,1 +1,0 @@
-import{o as d,d as r,n as s,s as e,a as t}from"./hooks-PJGK5Pe1.js";const a=d({id:e(),slug:e(),songId:e(),text:e(),upvoteCount:s().optional(),createdAt:r(),updatedAt:r()});t(a);const i=a.omit({id:!0,createdAt:!0,updatedAt:!0}),o=a.pick({id:!0,text:!0});d({id:e().min(1,"Required")});t(i);t(o);export{i as C,a as L,o as U};
