@@ -1,0 +1,21 @@
+import{o as e,t as n,N as r,w as m,O as d}from"./chunk-NL6KNZEE-CxvR8bn4.js";import{I as f}from"./input-xm3ORQld.js";import{c as a}from"./utils-bRKmu4jq.js";import{c as l}from"./createLucideIcon-8xFrFlUl.js";function h(){return e.jsxs("header",{className:"bg-background flex h-16 items-center justify-between px-4",children:[e.jsx("a",{href:"/",className:"flex flex-row items-center",children:e.jsx("img",{src:"/images/lyrifix-dark.png",alt:"logo",className:"h-8 w-24 max-w-[120px] min-w-[50px] rounded-md"})}),e.jsx("div",{className:"flex flex-row items-center",children:e.jsx(n,{method:"get",action:"/search",className:"",children:e.jsx(f,{name:"q",placeholder:"Search for songs...",className:"min-w-2xs"})})})]})}/**
+ * @license lucide-react v0.507.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */const p=[["path",{d:"M15.6 2.7a10 10 0 1 0 5.7 5.7",key:"1e0p6d"}],["circle",{cx:"12",cy:"12",r:"2",key:"1c9p78"}],["path",{d:"M13.4 10.6 19 5",key:"1kr7tw"}]],u=l("circle-gauge",p);/**
+ * @license lucide-react v0.507.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */const j=[["path",{d:"M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8",key:"5wwlr5"}],["path",{d:"M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z",key:"1d0kgt"}]],y=l("house",j);/**
+ * @license lucide-react v0.507.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */const N=[["path",{d:"M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z",key:"e79jfc"}],["circle",{cx:"13.5",cy:"6.5",r:".5",fill:"currentColor",key:"1okk4w"}],["circle",{cx:"17.5",cy:"10.5",r:".5",fill:"currentColor",key:"f64h9f"}],["circle",{cx:"6.5",cy:"12.5",r:".5",fill:"currentColor",key:"qy21gx"}],["circle",{cx:"8.5",cy:"7.5",r:".5",fill:"currentColor",key:"fotxhn"}]],g=l("palette",N);/**
+ * @license lucide-react v0.507.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */const w=[["path",{d:"M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2",key:"975kel"}],["circle",{cx:"12",cy:"7",r:"4",key:"17ys0d"}]],x=l("user",w),k=({isAuthenticated:c,user:t})=>{const o=[{to:"/",icon:e.jsx(y,{}),text:"Home"},{to:"/artists",icon:e.jsx(g,{}),text:"Artists"}];return e.jsx("nav",{className:"fixed right-0 bottom-0 left-0 z-50 border-t border-gray-700 bg-black text-white",children:e.jsxs("div",{className:a("grid gap-4",c&&"grid-cols-4",!c&&"grid-cols-3"),children:[o.map(s=>e.jsxs(r,{to:s.to,className:({isActive:i})=>a("flex flex-col items-center justify-center p-2",i&&"text-fuchsia-400"),children:[s.icon,e.jsx("span",{className:"text-sm",children:s.text})]},s.to)),c&&t&&e.jsxs(r,{to:"/library",className:({isActive:s})=>a("flex flex-col items-center justify-center p-2",s&&"text-fuchsia-400"),children:[e.jsx(u,{className:"mb-1 h-6 w-6"}),e.jsx("span",{className:"text-sm",children:"Your Library"})]}),c&&t&&e.jsxs(r,{to:"/logout",className:({isActive:s})=>a("flex flex-col items-center justify-center p-2",s&&"text-fuchsia-400"),children:[e.jsx(x,{className:"mb-1 h-6 w-6"}),e.jsx("span",{className:"text-sm",children:t.username})]}),!c&&!t&&e.jsxs(r,{to:"/login",className:({isActive:s})=>a("flex flex-col items-center justify-center p-2",s&&"text-fuchsia-400"),children:[e.jsx(x,{className:"mb-1 h-6 w-6"}),e.jsx("span",{className:"text-sm",children:"Login"})]})]})})},M=m(function({loaderData:t}){const{isAuthenticated:o,user:s}=t;return e.jsxs("div",{className:"bg-background no-scrollbar relative mx-auto min-h-screen w-full max-w-[500px] overflow-auto",children:[e.jsx("div",{className:"fixed top-0 left-1/2 z-10 w-full max-w-[500px] -translate-x-1/2",children:e.jsx(h,{})}),e.jsx("div",{className:"px-4 pt-16 pb-28 sm:px-6 md:px-8",children:e.jsx(d,{})}),e.jsx("div",{className:"fixed bottom-0 left-1/2 w-full max-w-[500px] -translate-x-1/2",children:e.jsx(k,{isAuthenticated:o,user:s})})]})});export{M as default};
