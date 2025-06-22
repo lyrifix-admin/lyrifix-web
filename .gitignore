@@ -6,7 +6,6 @@
 /.react-router/
 /build/
 
-.vercel
 .netlify
 *.tsbuildinfo
 
