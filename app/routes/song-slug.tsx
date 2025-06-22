@@ -197,7 +197,8 @@ export default function SongSlug({ loaderData }: Route.ComponentProps) {
                         />
                         <Button
                           type="submit"
-                          size="sm"
+                          size="xs"
+                          // disabled={user?.id ? true : false} // TODO
                           className="mb-2 flex items-center space-x-1"
                         >
                           <ArrowUpIcon className="h-4 w-4" />
