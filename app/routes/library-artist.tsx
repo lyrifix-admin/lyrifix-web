@@ -1,12 +1,11 @@
-import { Music, PlusIcon } from "lucide-react";
+import { MicVocal, PlusIcon } from "lucide-react";
 import { Link, redirect } from "react-router";
-
 import { Button } from "~/components/ui/button";
-import { SongCard } from "~/components/song-card";
 import { $fetch } from "~/lib/fetch";
 import type { paths } from "~/schema";
 import { destroySession, getSession } from "~/sessions.server";
-import type { Route } from "./+types/library";
+import type { Route } from "./+types/library-artist";
+import { Card, CardContent, CardTitle } from "~/components/ui/card";
 
 export function meta({}: Route.MetaArgs) {
   return [{ title: "Library Lyrifix" }];
@@ -34,7 +33,9 @@ export async function loader({ request }: Route.LoaderArgs) {
   return { library };
 }
 
-export default function LibraryRoute({ loaderData }: Route.ComponentProps) {
+export default function LibraryArtistRoute({
+  loaderData,
+}: Route.ComponentProps) {
   const { library } = loaderData;
 
   if (!library) return null;
@@ -43,76 +44,81 @@ export default function LibraryRoute({ loaderData }: Route.ComponentProps) {
     <div className="space-y-6 text-white">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Your Library</h1>
+          <h1 className="text-3xl font-bold">Your Artist Library</h1>
           <p className="text-lg text-gray-300">
             Welcome back, {library.user.fullName}!
           </p>
           <p className="text-sm text-gray-400">
-            {library.songs.length}{" "}
-            {library.songs.length === 1 ? "song" : "songs"} in your collection
+            {library.artists.length}{" "}
+            {library.artists.length === 1 ? "artist" : "artists"} in your
+            collection
           </p>
         </div>
       </div>
 
-      <div className="flex justify-center gap-2">
-        <Link to="/library-artist">
-          <Button>Artist</Button>
-        </Link>
-        <Button>Lyric</Button>
-      </div>
-
-      {/* Library Grid */}
-      {library.songs.length === 0 ? (
+      {library.artists.length === 0 ? (
         <div className="py-12 text-center">
-          <Music className="mx-auto mb-4 h-16 w-16 text-gray-400" />
+          <MicVocal className="mx-auto mb-4 h-16 w-16 text-gray-400" />
           <h3 className="mb-2 text-xl font-semibold text-gray-300">
-            Your library is empty
+            Your artist library is empty
           </h3>
           <p className="mb-6 text-gray-400">
-            Start building your collection by adding your first song
+            Start your collection by adding your first artist
           </p>
           <div className="flex flex-col flex-wrap items-center gap-2">
-            <Button asChild>
-              <Link to="/">
-                <PlusIcon className="mr-2 h-4 w-4" />
-                <span>Explore Songs to Add Lyric</span>
-              </Link>
-            </Button>
             <Button asChild variant="secondary">
-              <Link to="/add-song">
+              <Link to="/add-artist">
                 <PlusIcon className="mr-2 h-4 w-4" />
-                <span>Add Your First Song</span>
+                <span>Add Your First Artist</span>
               </Link>
             </Button>
           </div>
         </div>
       ) : (
         <ul className="grid grid-cols-1 items-stretch gap-4 md:grid-cols-2 lg:grid-cols-2">
-          {/* Add Song Card */}
           <li className="flex h-full flex-col">
-            <Link to="/add-song" className="flex h-full flex-1 flex-col">
+            <Link to="/add-artist" className="flex h-full flex-1 flex-col">
               <div className="group flex h-full flex-col rounded-lg border-2 border-dashed border-fuchsia-500/50 bg-gray-800/50 p-6 transition-all duration-200 hover:scale-105 hover:border-fuchsia-500 hover:bg-gray-800">
                 <div className="flex flex-1 flex-col items-center justify-center">
                   <PlusIcon className="h-8 w-8 text-fuchsia-400 transition-colors group-hover:text-fuchsia-300" />
                   <span className="text-fuchisa-400 mt-2 text-sm font-medium group-hover:text-fuchsia-300">
-                    Add New Song
+                    Add New Artist
                   </span>
                 </div>
               </div>
             </Link>
           </li>
 
-          {/* Song Cards */}
-          {library.songs.map((song) => (
+          {library.artists.map((artists) => (
             <li
-              key={song.id}
+              key={artists.id}
               className="flex h-full flex-col transition-all duration-200 hover:scale-105"
             >
               <Link
-                to={`/songs/${song.slug}`}
+                to={`/artists/${artists.slug}`}
                 className="flex h-full flex-1 flex-col"
               >
-                <SongCard song={song} />
+                <Card
+                  key={artists.id}
+                  className={
+                    "bg-card flex h-full flex-1 flex-col items-center rounded-3xl border-2 border-fuchsia-500 p-4 text-center break-words text-white shadow-lg"
+                  }
+                >
+                  <img
+                    src={
+                      artists.imageUrl ||
+                      "https://placehold.co/500x500/EEE/31343C"
+                    }
+                    alt={artists.name}
+                    className="aspect-square h-40 w-40 rounded-2xl object-cover"
+                  />
+
+                  <CardContent>
+                    <CardTitle className="w-full max-w-xs text-center break-words">
+                      {artists.name}
+                    </CardTitle>
+                  </CardContent>
+                </Card>
               </Link>
             </li>
           ))}
