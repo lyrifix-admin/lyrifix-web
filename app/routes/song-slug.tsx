@@ -47,10 +47,10 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 
 export async function action({ request }: Route.ClientActionArgs) {
   const formData = await request.formData();
-  console.log("FormData:", Object.fromEntries(formData.entries()));
+  // console.log("FormData:", Object.fromEntries(formData.entries()));
 
   const submission = parseWithZod(formData, { schema: UpvoteSchema });
-  console.log("Submission:", submission);
+  // console.log("Submission:", submission);
   if (submission.status !== "success") return submission.reply();
 
   const session = await getSession(request.headers.get("Cookie"));
@@ -83,8 +83,6 @@ export default function SongSlug({ loaderData }: Route.ComponentProps) {
   const navigate = useNavigate();
 
   const { isAuthenticated, user, song, lyricSearchParam } = loaderData;
-
-  // TODO: Reorder lyrics by upvoteCount
 
   const lyricsByUser: Record<string, typeof song.lyrics> = {};
 
@@ -188,25 +186,25 @@ export default function SongSlug({ loaderData }: Route.ComponentProps) {
               <TabsContent key={lyric.id} value={lyric.user.username}>
                 <div key={lyric.id} className="mb-6">
                   <div className="mb-6 inline-flex flex-col gap-1 sm:flex-row sm:items-center sm:space-x-4">
-                    {isAuthenticated && (
-                      <Form method="POST">
-                        <input type="hidden" name="id" value={lyric.id} />
-                        <input
-                          type="hidden"
-                          name="action"
-                          value={isUpvoted ? "cancel" : "upvote"}
-                        />
-                        <Button
-                          type="submit"
-                          size="xs"
-                          // disabled={user?.id ? true : false} // TODO
-                          className="mb-2 flex items-center space-x-1"
-                        >
-                          <ArrowUpIcon className="h-4 w-4" />
-                          <span>Upvote</span>
-                        </Button>
-                      </Form>
-                    )}
+                    {/* {isAuthenticated && ( */}
+                    <Form method="POST">
+                      <input type="hidden" name="id" value={lyric.id} />
+                      <input
+                        type="hidden"
+                        name="action"
+                        value={isUpvoted ? "cancel" : "upvote"}
+                      />
+                      <Button
+                        type="submit"
+                        size="xs"
+                        disabled={!isAuthenticated}
+                        className="mb-2 flex items-center space-x-1"
+                      >
+                        <ArrowUpIcon className="h-4 w-4" />
+                        <span>Upvote</span>
+                      </Button>
+                    </Form>
+                    {/* )} */}
 
                     {isAuthenticated && isLyricOwner && (
                       <Button asChild size="sm" className="mb-2">

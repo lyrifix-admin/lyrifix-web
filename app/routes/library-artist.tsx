@@ -6,6 +6,8 @@ import type { paths } from "~/schema";
 import { destroySession, getSession } from "~/sessions.server";
 import type { Route } from "./+types/library-artist";
 import { Card, CardContent, CardTitle } from "~/components/ui/card";
+import { NavLink } from "react-router";
+import { cn } from "~/lib/utils";
 
 export function meta({}: Route.MetaArgs) {
   return [{ title: "Library Lyrifix" }];
@@ -39,12 +41,17 @@ export default function LibraryArtistRoute({
   const { library } = loaderData;
 
   if (!library) return null;
+  const navLinks = [
+    { to: "/library", text: "Songs" },
+    { to: "/library-artist", text: "Artists" },
+    { to: "/library-lyric", text: "Lyrics" },
+  ];
 
   return (
     <div className="space-y-6 text-white">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Your Artist Library</h1>
+          <h1 className="text-3xl font-bold">Your Artists Library</h1>
           <p className="text-lg text-gray-300">
             Welcome back, {library.user.fullName}!
           </p>
@@ -54,6 +61,21 @@ export default function LibraryArtistRoute({
             collection
           </p>
         </div>
+      </div>
+      <div className="flex justify-center gap-2">
+        {navLinks.map((link) => (
+          <NavLink key={link.to} to={link.to}>
+            {({ isActive }) => (
+              <Button
+                variant={isActive ? "secondary" : "default"}
+                className={cn("text-sm", isActive && "bg-secondary text-white")}
+                asChild
+              >
+                <span>{link.text}</span>
+              </Button>
+            )}
+          </NavLink>
+        ))}
       </div>
 
       {library.artists.length === 0 ? (
