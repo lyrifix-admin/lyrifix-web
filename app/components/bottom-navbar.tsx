@@ -1,5 +1,5 @@
 import { CircleGaugeIcon, HomeIcon, PaletteIcon, UserIcon } from "lucide-react";
-import { NavLink } from "react-router";
+import { NavLink, useLocation } from "react-router";
 import { cn } from "~/lib/utils";
 import type { User } from "~/schemas/user";
 
@@ -9,6 +9,8 @@ interface BottomNavbarProps {
 }
 
 export const BottomNavbar = ({ isAuthenticated, user }: BottomNavbarProps) => {
+  const location = useLocation();
+  const isLibraryPath = location.pathname.startsWith("/library");
   const navLinks = [
     { to: "/", icon: <HomeIcon />, text: "Home" },
     { to: "/artists", icon: <PaletteIcon />, text: "Artists" },
@@ -44,12 +46,10 @@ export const BottomNavbar = ({ isAuthenticated, user }: BottomNavbarProps) => {
         {isAuthenticated && user && (
           <NavLink
             to="/library"
-            className={({ isActive }) =>
-              cn(
-                "flex flex-col items-center justify-center p-2",
-                isActive && "text-fuchsia-400",
-              )
-            }
+            className={cn(
+              "flex flex-col items-center justify-center p-2",
+              isLibraryPath && "text-fuchsia-400",
+            )}
           >
             <CircleGaugeIcon className="mb-1 h-6 w-6" />
             <span className="text-sm">Your Library</span>
