@@ -73,7 +73,7 @@ export async function action({ request }: Route.ClientActionArgs) {
     });
   }
 
-  return redirect(href("/artists"));
+  return redirect(href("/artists/:slug", { slug: data.slug }));
 }
 
 export default function ArtistsSlugEditRoute({
