@@ -128,10 +128,12 @@ export default function SongSlugEdit({
 
   // const [imageUrl, setImageUrl] = useState(fields.imageUrl.initialValue ?? "");
 
-  const defaultOptions: Option[] = artists.map((artist) => ({
-    value: artist.id,
-    label: artist.name,
-  }));
+  const defaultOptions: Option[] = artists
+    .map((artist) => ({
+      value: artist.id,
+      label: artist.name,
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label));
 
   const controlArtistIds = useInputControl(fields.artistIds); // Conform
   const controlimageUrl = useInputControl(fields.imageUrl); // Conform
