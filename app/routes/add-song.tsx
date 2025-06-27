@@ -117,10 +117,12 @@ export default function AddSongRoute({
 
   const artistIdsFieldList = fields.artistIds.getFieldList();
 
-  const defaultOptions: Option[] = artists.map((artist) => ({
-    value: artist.id,
-    label: artist.name,
-  }));
+  const defaultOptions: Option[] = artists
+    .map((artist) => ({
+      value: artist.id,
+      label: artist.name,
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label));
 
   const controlArtistIds = useInputControl(fields.artistIds); // Conform
   const [artistOptions, setArtistOptions] = useState<Option[]>([]); // Multiselect
