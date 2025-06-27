@@ -16,7 +16,7 @@ export const SongSchema = z.object({
 export const SongsSchema = z.array(SongSchema);
 
 export const CreateSongSchema = z.object({
-  imageUrl: z.string().min(1),
+  imageUrl: z.string().min(1).optional(),
   title: z.string().min(1),
   artistIds: z.array(z.string().min(1)),
   userId: z.string().ulid().optional(),
@@ -28,13 +28,15 @@ export const CreateSongSchema = z.object({
 
 export const UpdateSongSchema = z.object({
   id: z.string().ulid(),
-  imageUrl: z.string().min(1),
+  imageUrl: z.string().min(1).optional(),
   title: z.string().min(1),
   artistIds: z.array(z.string().min(1)),
   spotifyUrl: z
     .string()
-    .optional()
-    .transform((val) => (val?.trim() ? val : null)),
+    .trim()
+    .transform((val) => (val === "" ? null : val))
+    .nullable()
+    .optional(),
 });
 
 export type Song = z.infer<typeof SongSchema>;
