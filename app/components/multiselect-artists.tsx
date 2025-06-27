@@ -18,6 +18,11 @@ export function MultiselectArtists({
   placeholder,
   className,
 }: MultiselectArtistsProps) {
+  const onSearchSync = (value: string) =>
+    defaultOptions.filter((option) =>
+      option.label.toLowerCase().includes(value.toLowerCase()),
+    );
+
   return (
     <div className="*:not-first:mt-2">
       <MultipleSelector
@@ -27,7 +32,9 @@ export function MultiselectArtists({
         className={className}
         placeholder={placeholder || "Select artists"}
         emptyIndicator={<p className="text-center text-sm">No results found</p>}
-        commandProps={{ label: "Select artists" }}
+        commandProps={{ label: "Select artists", shouldFilter: false }}
+        onSearchSync={onSearchSync}
+        triggerSearchOnFocus={true}
       />
     </div>
   );
