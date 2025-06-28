@@ -184,8 +184,8 @@ export default function SongSlug({ loaderData }: Route.ComponentProps) {
 
             return (
               <TabsContent key={lyric.id} value={lyric.user.username}>
-                <div key={lyric.id} className="mb-6">
-                  <div className="mb-6 inline-flex flex-col gap-1 sm:flex-row sm:items-center sm:space-x-4">
+                <div key={lyric.id} className="mb-6 space-y-6">
+                  <div className="flex gap-2">
                     {/* {isAuthenticated && ( */}
                     <Form method="POST">
                       <input type="hidden" name="id" value={lyric.id} />
@@ -195,6 +195,7 @@ export default function SongSlug({ loaderData }: Route.ComponentProps) {
                         value={isUpvoted ? "cancel" : "upvote"}
                       />
                       <Button
+                        variant="outline"
                         type="submit"
                         size="xs"
                         disabled={!isAuthenticated}
@@ -207,7 +208,7 @@ export default function SongSlug({ loaderData }: Route.ComponentProps) {
                     {/* )} */}
 
                     {isAuthenticated && isLyricOwner && (
-                      <Button asChild size="sm" className="mb-2">
+                      <Button asChild size="xs" variant="outline">
                         <Link
                           to={href("/songs/:slug/lyrics/:id/edit", {
                             slug: song.slug,

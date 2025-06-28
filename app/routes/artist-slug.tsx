@@ -4,7 +4,7 @@ import { $fetch } from "~/lib/fetch";
 import type { paths } from "~/schema";
 import { href, Link } from "react-router";
 import { Button } from "~/components/ui/button";
-import { Debug } from "~/components/ui/debug";
+import { PlusIcon } from "lucide-react";
 
 type ArtistSuccessResponse =
   paths["/artists/{slug}"]["get"]["responses"][200]["content"]["application/json"];
@@ -20,7 +20,6 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 
   const session = await getSession(request.headers.get("Cookie"));
   const isAuthenticated = session.get("isAuthenticated");
-  const user = session.get("user");
 
   const { data: artist, error } = await $fetch<ArtistSuccessResponse>(
     `/artists/${slug}`,
@@ -35,6 +34,8 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 
 export default function ArtistSlugRoute({ loaderData }: Route.ComponentProps) {
   const { artist, isAuthenticated } = loaderData;
+
+  const hasSongs = artist.songs && artist.songs?.length > 0;
 
   return (
     <div className="flex flex-col pt-10">
@@ -59,26 +60,41 @@ export default function ArtistSlugRoute({ loaderData }: Route.ComponentProps) {
       </div>
       <div className="flex flex-col space-y-4 px-8 py-4">
         <h2 className="mt-8 mb-4 text-2xl font-semibold">Songs</h2>
+
         <div className="space-y-4">
-          {artist.songs?.map((song, i) => (
-            <Link
-              to={`/songs/${song.slug}`}
-              key={song.id}
-              className="hover:bg-card flex items-center space-x-4 rounded-md border-2 border-fuchsia-500 p-2 transition-all duration-200 hover:scale-105"
-            >
-              <img
-                src={song.imageUrl ?? "https://placehold.co/500x500/EEE/31343C"}
-                alt={song.title}
-                className="h-12 w-12 rounded-md object-cover"
-              />
-              <div className="flex flex-col">
-                <span className="leading-tight font-medium">{song.title}</span>
-                <span className="text-muted-foreground text-sm">
-                  {artist.name}
-                </span>
-              </div>
-            </Link>
-          ))}
+          {!hasSongs && (
+            <Button asChild variant="secondary">
+              <Link to="/add-song">
+                <PlusIcon className="mr-2 h-4 w-4" />
+                <span>Add Artist&apos;s Song</span>
+              </Link>
+            </Button>
+          )}
+
+          {hasSongs &&
+            artist.songs?.map((song) => (
+              <Link
+                to={`/songs/${song.slug}`}
+                key={song.id}
+                className="hover:bg-card flex items-center space-x-4 rounded-md border-2 border-fuchsia-500 p-2 transition-all duration-200 hover:scale-105"
+              >
+                <img
+                  src={
+                    song.imageUrl ?? "https://placehold.co/500x500/EEE/31343C"
+                  }
+                  alt={song.title}
+                  className="h-12 w-12 rounded-md object-cover"
+                />
+                <div className="flex flex-col">
+                  <span className="leading-tight font-medium">
+                    {song.title}
+                  </span>
+                  <span className="text-muted-foreground text-sm">
+                    {artist.name}
+                  </span>
+                </div>
+              </Link>
+            ))}
         </div>
       </div>
     </div>

@@ -29,7 +29,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
     <>
       <Banner />
 
-      <ul className="grid grid-cols-1 items-stretch gap-4 md:grid-cols-2 lg:grid-cols-2">
+      <ul className="grid grid-cols-2 items-stretch gap-4 lg:grid-cols-2">
         {songs.map((song) => (
           <li
             key={song.id}

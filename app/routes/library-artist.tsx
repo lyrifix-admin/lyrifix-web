@@ -97,7 +97,7 @@ export default function LibraryArtistRoute({
           </div>
         </div>
       ) : (
-        <ul className="grid grid-cols-1 items-stretch gap-4 md:grid-cols-2 lg:grid-cols-2">
+        <ul className="grid grid-cols-2 items-stretch gap-4 md:grid-cols-2 lg:grid-cols-2">
           <li className="flex h-full flex-col">
             <Link to="/add-artist" className="flex h-full flex-1 flex-col">
               <div className="group flex h-full flex-col rounded-lg border-2 border-dashed border-fuchsia-500/50 bg-gray-800/50 p-6 transition-all duration-200 hover:scale-105 hover:border-fuchsia-500 hover:bg-gray-800">

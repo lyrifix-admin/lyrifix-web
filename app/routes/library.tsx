@@ -103,7 +103,7 @@ export default function LibraryRoute({ loaderData }: Route.ComponentProps) {
           </div>
         </div>
       ) : (
-        <ul className="grid grid-cols-1 items-stretch gap-4 md:grid-cols-2 lg:grid-cols-2">
+        <ul className="grid grid-cols-2 items-stretch gap-4 md:grid-cols-2 lg:grid-cols-2">
           {/* Add Song Card */}
           <li className="flex h-full flex-col">
             <Link to="/add-song" className="flex h-full flex-1 flex-col">
